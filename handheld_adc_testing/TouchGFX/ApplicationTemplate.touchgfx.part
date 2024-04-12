@@ -1,7 +1,7 @@
 
 {
   "Application": {
-    "Name": "handheld_display_testing",
+    "Name": "handheld_adc_testing",
     "TouchGfxPath": "../Middlewares/ST/touchgfx",
     "AvailableColorDepths": [ 16 ],
     "AvailableLCDs":
@@ -19,7 +19,7 @@
     "SubFamily": "STM32U5x5",
     "Platform": "m33",
     "Toolchain": "STM32CubeIDE",
-    "ProjectFile": "../handheld_display_testing.ioc",
+    "ProjectFile": "../handheld_adc_testing.ioc",
     "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
     "OptionalComponents": [
     ],

@@ -160,6 +160,7 @@ int main(void)
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET); //set LED pin high to show that program is working
+  HAL_GPIO_WritePin(EN_5V_GPIO_Port, EN_5V_Pin, GPIO_PIN_SET);
 
   ILI9341_Init();		// Run initialization function for LCD display
   ILI9341_SetDisplayBrightness(&htim8,100);	//set backlight brightness to 100%
@@ -804,7 +805,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, PWR_LED_Pin|NRF24_CS_Pin|NRF24_CE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, BUZZER_Pin|SD_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, BUZZER_Pin|EN_5V_Pin|SD_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LCD_CS_Pin|LCD_DC_Pin|LCD_RST_Pin, GPIO_PIN_RESET);
@@ -822,8 +823,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPS_EN_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BUZZER_Pin SD_CS_Pin */
-  GPIO_InitStruct.Pin = BUZZER_Pin|SD_CS_Pin;
+  /*Configure GPIO pins : BUZZER_Pin EN_5V_Pin SD_CS_Pin */
+  GPIO_InitStruct.Pin = BUZZER_Pin|EN_5V_Pin|SD_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
