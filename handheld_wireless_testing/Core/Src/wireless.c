@@ -265,8 +265,6 @@ void Wireless_TotalRegisterReset() {
 	Wireless_FEATURE_RegReset();		//reset FEATURE register
 }
 
-
-
 /*
  * Initiates wireless connection handshake by the transmitter
  * @return The connection status after the handshake attempt
@@ -330,6 +328,80 @@ uint8_t Wireless_TxHandshake() {
 
 	return connected;
 
+}
+/*
+ * Scans all or the given rf channels to connect with the transmitter
+ */
+uint8_t Wireless_RxHandshake() {
+
+	uint8_t configReg = Wireless_ReadRegister(0x00);		//read CONFIG register
+	bitset(configReg,0);									//set bit 0 (PRIM_RX) of CONFIG register
+	Wireless_WriteRegister(0x00,configReg);					// set PRIM_RX to 1
+
+	CE_High();												// set CE pin to 1 for > 1us
+
+	//next step depends on whether the receiver is performing a sweep or is using a pre-stored value for UID and RF Channel
+
+	uint8_t rfChannel;
+	uint8_t rfChReg = Wireless_ReadRegister(0x05);
+	rfChReg |= rfChannel;
+	rfChReg &= rfChannel;
+	Wireless_WriteRegister(0x05, rfChReg);
+
+	uint8_t rxUID[];
+	Wireless_UpdateRxAddress(rxUID);
+
+	//for sweep, need to increment RF_CH by one after amount of time while checking for connection by checking RX_DR bit
+	/*
+	 *remove comments to test sweep
+	int delay;
+	uint8_t i = 0;
+	uint8_t rxDr;
+
+	while (i < 128 && rxDr != 1) {
+		uint8_t rfChReg = Wireless_ReadRegister(0x05);
+		rfChReg |= i;
+		rfChReg &= i;
+		Wireless_WriteRegister(0x05, rfChReg);
+		HAL_Delay(delay);
+
+		i ++;
+
+		uint8_t statusReg = Wireless_ReadRegister(0x07);
+		statusReg &= 0x40;
+		statusReg >> 6;
+		rxDr = statusReg;
+	}
+	*/
+	Wireless_Status_RegReset();
+
+}
+/*
+ * Writes the user-specified UID into the RX address register
+ * @param rxUID the ID entered by the user to match that of the associated TX
+ */
+void Wireless_UpdateRxAddress(uint8_t rxUID[]) {
+	uint8_t rxAddr[];
+	uint8_t command = 0x0A;
+
+	CS_Low();
+	HAL_SPI_Transmit(&hspi2, &command, 1, 100);
+
+	for (int i = 0; i < 5; i++) {
+		HAL_SPI_Receive(&hspi2, &rxAddr[i], 1, 100);
+		rxAddr[i] |= rxUID[i];
+		rxAddr[i] &= rxUID[i];
+	}
+	CS_High();
+
+	command = 0x2A;
+
+	CS_Low();
+	HAL_SPI_Transmit(&hspi2, &command, 1, 100);
+	for (i = 0; i < 5; i++) {
+		HAL_SPI_Transmit(&hspi2, &rxAddr[i], 1, 100);
+	}
+	CS_High();
 }
 /*
  * end of Caleb's edits;

@@ -40,6 +40,8 @@ void Wireless_DYNPD_RegReset();
 void Wireless_FEATURE_RegReset();
 void Wireless_TotalRegisterReset();
 uint8_t Wireless_TxHandshake();
+uint8_t Wireless_RxHandshake();
+void Wireless_UpdateRxAddress(uint8_t rxUID[]);
 /*
  * end of Caleb's edits;
  */
