@@ -82,6 +82,259 @@ void Wireless_DisableContinuousWave() {
 	Wireless_WriteRegister(0x06,rfReg);
 }
 
+/*
+ * Caleb's edits;
+ * change if necessary;
+ * I'm a peasant;
+ */
+void Wireless_CONFIG_RegReset() {
+	//reset CONFIG register
+	uint8_t configReg = Wireless_ReadRegister(0x00);
+	configReg |= 0x08;
+	configReg &= 0x08;
+	Wireless_WriteRegister(0x00, configReg);
+}
+
+void Wireless_ENAA_RegReset() {
+	//reset EN_AA register
+	uint8_t enAaReg = Wireless_ReadRegister(0x01);
+	enAaReg |= 0x3F;
+	enAaReg &= 0x3F;
+	Wireless_WriteRegister(0x01, enAaReg);
+}
+
+void Wireless_ENRXADDR_RegReset() {
+	//reset EN_RXADDR register
+	uint8_t enRxAddrReg = Wireless_ReadRegister(0x02);
+	enRxAddrReg |= 0x03;
+	enRxAddrReg &= 0x03;
+	Wireless_WriteRegister(0x02, enRxAddrReg);
+}
+
+void Wireless_SETUPAW_RegReset() {
+	//reset SETUP_AW register
+	uint8_t setupAwReg = Wireless_ReadRegister(0x03);
+	setupAwReg |= 0x03;
+	setupAwReg &= 0x03;
+	Wireless_WriteRegister(0x03, setupAwReg);
+}
+
+void Wireless_SETUPRETR_RegReset() {
+	//reset SETUP_RETR register
+	uint8_t setupRetrReg = Wireless_ReadRegister(0x04);
+	setupRetrReg |= 0x03;
+	setupRetrReg &= 0x03;
+	Wireless_WriteRegister(0x04, setupRetrReg);
+}
+
+void Wireless_RFCH_RegReset() {
+	//reset RF_CH register
+	uint8_t rfChReg = Wireless_ReadRegister(0x05);
+	rfChReg |= 0x02;
+	rfChReg &= 0x02;
+	Wireless_WriteRegister(0x05, rfChReg);
+}
+
+void Wireless_RFSETUP_RegReset() {
+	//reset RF_SETUP register
+	uint8_t rfSetupReg = Wireless_ReadRegister(0x06);
+	rfSetupReg |= 0x0E;
+	rfSetupReg &= 0x0E;
+	Wireless_WriteRegister(0x06, rfSetupReg);
+}
+
+void Wireless_STATUS_RegReset() {
+	//reset STATUS register
+	uint8_t statusReg = Wireless_ReadRegister(0x07);
+	statusReg |= 0x7E;
+	statusReg &= 0x7E;
+	Wireless_WriteRegister(0x07, statusReg);
+}
+
+void Wireless_RXPWP0_RegReset() {
+	//reset RX_PW_P0 register
+	uint8_t rxPwP0Reg = Wireless_ReadRegister(0x11);
+	rxPwP0Reg |= 0x00;
+	rxPwP0Reg &= 0x00;
+	Wireless_WriteRegister(0x11, rxPwP0Reg);
+}
+
+void Wireless_RXPWP1_RegReset() {
+	//reset RX_PW_P1 register
+	uint8_t rxPwP1Reg = Wireless_ReadRegister(0x12);
+	rxPwP1Reg |= 0x00;
+	rxPwP1Reg &= 0x00;
+	Wireless_WriteRegister(0x12, rxPwP1Reg);
+}
+
+void Wireless_RXPWP2_RegReset() {
+	//reset RX_PW_P2 register
+	uint8_t rxPwP2Reg = Wireless_ReadRegister(0x13);
+	rxPwP2Reg |= 0x00;
+	rxPwP2Reg &= 0x00;
+	Wireless_WriteRegister(0x13, rxPwP2Reg);
+}
+
+void Wireless_RXPWP3_RegReset() {
+	//reset RX_PW_P3 register
+	uint8_t rxPwP3Reg = Wireless_ReadRegister(0x14);
+	rxPwP3Reg |= 0x00;
+	rxPwP3Reg &= 0x00;
+	Wireless_WriteRegister(0x14, rxPwP3Reg);
+}
+
+void Wireless_RXPWP4_RegReset() {
+	//reset RX_PW_P4 register
+	uint8_t rxPwP4Reg = Wireless_ReadRegister(0x15);
+	rxPwP4Reg |= 0x00;
+	rxPwP4Reg &= 0x00;
+	Wireless_WriteRegister(0x15, rxPwP4Reg);
+}
+
+void Wireless_RXPWP5_RegReset() {
+	//reset RX_PW_P5 register
+	uint8_t rxPwP5Reg = Wireless_ReadRegister(0x16);
+	rxPwP5Reg |= 0x00;
+	rxPwP5Reg &= 0x00;
+	Wireless_WriteRegister(0x16, rxPwP5Reg);
+}
+
+void Wireless_DYNPD_RegReset() {
+	//reset DYNPD register
+	uint8_t dynpdReg = Wireless_ReadRegister(0x1C);
+	dynpdReg |= 0x00;
+	dynpdReg &= 0x00;
+	Wireless_WriteRegister(0x1C, dynpdReg);
+}
+
+void Wireless_FEATURE_RegReset() {
+	//reset FEATURE register
+	uint8_t featureReg = Wireless_ReadRegister(0x1D);
+	featureReg |= 0x00;
+	featureReg &= 0x00;
+	Wireless_WriteRegister(0x1D, featureReg);
+}
+
+/*
+ * Resets every usable register of the NRF24L01
+ */
+void Wireless_TotalRegisterReset() {
+	Wireless_CONFIG_RegRegister();		//reset CONFIG register
+
+	Wireless_ENAA_RegReset();			//reset EN_AA register
+
+	Wireless_ENRXADDR_RegReset();		//reset EN_RXADDR register
+
+	Wireless_SETUPAW_RegReset();		//reset SETUP_AW register
+
+	Wireless_SETUPRETR_RegReset();		//reset SETUP_RETR register
+
+	Wireless_RFCH_RegReset();			//reset RF_CH register
+
+	Wireless_RFSETUP_RegReset();		//reset RF_SETUP register
+
+	Wireless_STATUS_RegReset();			//reset STATUS register
+
+	/* reset RX_ADDR_P0 register
+	 * I'm not entirely sure how to do this since the register contains 5 bytes
+	 * Should I make an array? Working on that
+	 *
+	 * uint8_t rxAddrP0Reg;
+	 * uint8_t command = 0x00 | 0x0A;
+
+	 * CS_Low();
+	 * HAL_SPI_Transmit(&hspi2, &command, 1, 100);
+	 * HAL_SPI_Receive(&hspi2, &rxAddrP0Reg, 3, 100);
+	 * CS_High();
+	 */
+
+	Wireless_RXPWP0_RegReset();			//reset RX_PW_P0 register
+
+	Wireless_RXPWP1_RegReset();			//reset RX_PW_P1 register
+
+	Wireless_RXPWP2_RegReset();			//reset RX_PW_P2 register
+
+	Wireless_RXPWP3_RegReset();			//reset RX_PW_P3 register
+
+	Wireless_RXPWP4_RegReset();			//reset RX_PW_P4 register
+
+	Wireless_RXPWP5_RegReset();			//reset RX_PW_P5 register
+
+	Wireless_DYNPD_RegReset();			//reset DYNPD register
+
+	Wireless_FEATURE_RegReset();		//reset FEATURE register
+}
+
+
+
+/*
+ * Initiates wireless connection handshake by the transmitter
+ * @return The connection status after the handshake attempt
+ */
+uint8_t Wireless_TxHandshake() {
+															//enter transmit mode
+	uint8_t configReg = Wireless_ReadRegister(0x00);		//read CONFIG register
+	bitclear(configReg,0);									//clear bit 0 (PRIM_RX) of CONFIG register
+	Wireless_WriteRegister(0x00,configReg);					// set PRIM_RX to 0
+
+	CE_High();												// set CE pin to 1 for > 1us
+
+	uint8_t connPld = 0x01;									//connection pay load to be transmitted
+	uint8_t wTxPldCommand = 0xA0;							//W_TX_PAYLOAD SPI command to write TX pay load
+	HAL_SPI_Transmit(&hspi2, &wTxPldCommand, 1, 100);		//send write command
+	HAL_SPI_Transmit(&hspi2, &connPld, 1, 100);				//write connect pay load into FIFO
+
+	uint8_t retransmitDelay;								//4 bit delay value based on data sheet
+	uint8_t retransmitCount;								//4 bit count value based on data sheet
+	retransmitDelay << 4;									//delay determined by bits 7-4 of SETUP register
+	uint8_t setupReg = Wireless_ReadRegister(0x04);
+	setupReg |= retransmitDelay;							//set retransmit delay
+	setupReg |= retransmitCount;							//set retransmit count
+
+															//transmit connect packet
+	uint8_t flushTxCommand = 0xE1;							//FLUSH_TX SPI command
+	HAL_SPI_Transmit(&hspi2, &flushTxCommand, 1, 100);		//flush TX FIFO (will auto check for ACK)
+
+	uint8_t attempts;										//number of attempts allowed later specified
+	uint8_t attemptCounter = 1;								//one connection attempt has been made
+
+	uint8_t statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
+	uint8_t rfReg = statusReg & 0x10;						//bitwise AND the register w/ 0001 0000
+															//if the result is 0x10, MAX_RT (bit 4) is triggered
+															//if result is 0x00, MAX_RT is not triggered
+
+	while (rfReg == 0x10 && attemptCounter < attempts) {	//while MAX_RT is triggered (no ACK) retry connection
+
+		Wireless_WriteRegister(0x07, 0x10);					//reset MAX_RT flag
+															//it says to write 1 to the bit (did I do it right?)
+		HAL_SPI_Transmit(&hspi2, &wTxPldCommand, 1, 100);	//command to write pay load
+		HAL_SPI_Transmit(&hspi2, &connPld, 1, 100);			//re-write pay load
+
+		HAL_SPI_Transmit(&hspi2, &flushTxCommand, 1, 100);	//re-send pay load
+
+		attemptCounter ++;									//increment counter of connection attempts
+
+		statusReg = Wireless_ReadRegister (0x07);			//read STATUS register
+		rfReg = statusReg & 0x10;							//check MAX_RT flag
+	}
+
+	Wireless_WriteRegister(0x07, 0x10); 					//reset MAX_RT flag
+
+	bool connected;											//variable for confirming connection
+	if (rfReg == 0x10) {									//if MAX_RT triggered
+		connected == false;									//still not connected
+	}
+	else {
+		connected == true;									//is connected
+	}
+
+	return connected;
+
+}
+/*
+ * end of Caleb's edits;
+ */
+
 static void CS_High() {
 	HAL_GPIO_WritePin(NRF24_CS_GPIO_Port, NRF24_CS_Pin, GPIO_PIN_SET);
 }
