@@ -128,8 +128,11 @@ int main(void)
   HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET); //set LED pin high to show that program is working
   HAL_GPIO_WritePin(NRF24_CS_GPIO_Port, NRF24_CS_Pin, GPIO_PIN_SET);
 
+  Wireless_TotalRegisterReset();
   Wireless_PowerOn();
 
+	//Wireless_TotalRegisterReset();
+	int connected = Wireless_TxHandshake();
 
   /* USER CODE END 2 */
 
@@ -140,10 +143,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  Wireless_EnableContinuousWave();
-	  HAL_Delay(1000);
-	  Wireless_DisableContinuousWave();
-	  HAL_Delay(1000);
+	  //Wireless_EnableContinuousWave();
+	  //HAL_Delay(1000);
+	  //Wireless_DisableContinuousWave();
+	  //HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }

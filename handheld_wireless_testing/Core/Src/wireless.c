@@ -43,6 +43,12 @@ void Wireless_WriteRegister(uint8_t reg, uint8_t value) {
 	CS_High();
 }
 
+void Wireless_WriteValue(uint8_t value) {
+	CS_Low();
+	HAL_SPI_Transmit(&hspi2, &value, 1, 100);
+	CS_High();
+}
+
 void Wireless_PowerOn() {
 	uint8_t statusRegister = Wireless_ReadRegister(0x00);
 	bitset(statusRegister, 1);	// Set the PWR_UP bit (bit 1) of CONFIG register
@@ -219,7 +225,7 @@ void Wireless_FEATURE_RegReset() {
  * Resets every usable register of the NRF24L01
  */
 void Wireless_TotalRegisterReset() {
-	Wireless_CONFIG_RegRegister();		//reset CONFIG register
+	Wireless_CONFIG_RegReset();		//reset CONFIG register
 
 	Wireless_ENAA_RegReset();			//reset EN_AA register
 
@@ -270,38 +276,56 @@ void Wireless_TotalRegisterReset() {
  * @return The connection status after the handshake attempt
  */
 uint8_t Wireless_TxHandshake() {
+
+	uint8_t rfChannel = 0x01;
+	uint8_t rfChReg = Wireless_ReadRegister(0x05);
+	rfChReg |= rfChannel;
+	rfChReg &= rfChannel;
+	Wireless_WriteRegister(0x05, rfChReg);
+
+	uint8_t flushTx = 0xE1;
+	Wireless_WriteValue(flushTx);
+
+	uint8_t statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
+	uint8_t rfReg = statusReg & 0x10;						//bitwise AND the register w/ 0001 0000
+	uint8_t txDSReg = statusReg & 0x20;						//if the result is 0x10, MAX_RT (bit 4) is triggered
+															//if result is 0x00, MAX_RT is not triggered
+
+	CE_Low();												// set CE pin to 1 for > 1us
 															//enter transmit mode
 	uint8_t configReg = Wireless_ReadRegister(0x00);		//read CONFIG register
 	bitclear(configReg,0);									//clear bit 0 (PRIM_RX) of CONFIG register
 	Wireless_WriteRegister(0x00,configReg);					// set PRIM_RX to 0
 
-	CE_High();												// set CE pin to 1 for > 1us
-
 	uint8_t connPld = 0x01;									//connection pay load to be transmitted
 	uint8_t wTxPldCommand = 0xA0;							//W_TX_PAYLOAD SPI command to write TX pay load
+	CS_Low();
 	HAL_SPI_Transmit(&hspi2, &wTxPldCommand, 1, 100);		//send write command
 	HAL_SPI_Transmit(&hspi2, &connPld, 1, 100);				//write connect pay load into FIFO
+	CS_High();
+	uint8_t retransmitDelay = 0b1111;						//4 bit delay value based on data sheet
+	uint8_t retransmitCount = 0b1111;						//4 bit count value based on data sheet
 
-	uint8_t retransmitDelay;								//4 bit delay value based on data sheet
-	uint8_t retransmitCount;								//4 bit count value based on data sheet
-	retransmitDelay << 4;									//delay determined by bits 7-4 of SETUP register
+	retransmitDelay = retransmitDelay << 4;									//delay determined by bits 7-4 of SETUP register
 	uint8_t setupReg = Wireless_ReadRegister(0x04);
 	setupReg |= retransmitDelay;							//set retransmit delay
 	setupReg |= retransmitCount;							//set retransmit count
 
+	CE_High();
 															//transmit connect packet
-	uint8_t flushTxCommand = 0xE1;							//FLUSH_TX SPI command
-	HAL_SPI_Transmit(&hspi2, &flushTxCommand, 1, 100);		//flush TX FIFO (will auto check for ACK)
+															//flush TX FIFO (will auto check for ACK)
+											// set CE pin to 1 for > 1us
 
-	uint8_t attempts;										//number of attempts allowed later specified
+	HAL_Delay(1000);
+	uint8_t attempts = 100;										//number of attempts allowed later specified
 	uint8_t attemptCounter = 1;								//one connection attempt has been made
 
-	uint8_t statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
-	uint8_t rfReg = statusReg & 0x10;						//bitwise AND the register w/ 0001 0000
-															//if the result is 0x10, MAX_RT (bit 4) is triggered
+	statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
+	rfReg = statusReg & 0x10;						//bitwise AND the register w/ 0001 0000
+	txDSReg = statusReg & 0x20;						//if the result is 0x10, MAX_RT (bit 4) is triggered
 															//if result is 0x00, MAX_RT is not triggered
 
-	while (rfReg == 0x10 && attemptCounter < attempts) {	//while MAX_RT is triggered (no ACK) retry connection
+	/*while (rfReg == 0x10 && attemptCounter < attempts) {	//while MAX_RT is triggered (no ACK) retry connection
 
 		Wireless_WriteRegister(0x07, 0x10);					//reset MAX_RT flag
 															//it says to write 1 to the bit (did I do it right?)
@@ -315,15 +339,15 @@ uint8_t Wireless_TxHandshake() {
 		statusReg = Wireless_ReadRegister (0x07);			//read STATUS register
 		rfReg = statusReg & 0x10;							//check MAX_RT flag
 	}
-
+*/
 	Wireless_WriteRegister(0x07, 0x10); 					//reset MAX_RT flag
 
-	bool connected;											//variable for confirming connection
+	int connected;											//variable for confirming connection
 	if (rfReg == 0x10) {									//if MAX_RT triggered
-		connected == false;									//still not connected
+		connected == 0;									//still not connected
 	}
 	else {
-		connected == true;									//is connected
+		connected == 1;									//is connected
 	}
 
 	return connected;
@@ -348,7 +372,7 @@ uint8_t Wireless_RxHandshake() {
 	rfChReg &= rfChannel;
 	Wireless_WriteRegister(0x05, rfChReg);
 
-	uint8_t rxUID[];
+	uint8_t rxUID[5];
 	Wireless_UpdateRxAddress(rxUID);
 
 	//for sweep, need to increment RF_CH by one after amount of time while checking for connection by checking RX_DR bit
@@ -381,7 +405,7 @@ uint8_t Wireless_RxHandshake() {
  * @param rxUID the ID entered by the user to match that of the associated TX
  */
 void Wireless_UpdateRxAddress(uint8_t rxUID[]) {
-	uint8_t rxAddr[];
+	uint8_t rxAddr[5];
 	uint8_t command = 0x0A;
 
 	CS_Low();
@@ -398,7 +422,7 @@ void Wireless_UpdateRxAddress(uint8_t rxUID[]) {
 
 	CS_Low();
 	HAL_SPI_Transmit(&hspi2, &command, 1, 100);
-	for (i = 0; i < 5; i++) {
+	for (int i = 0; i < 5; i++) {
 		HAL_SPI_Transmit(&hspi2, &rxAddr[i], 1, 100);
 	}
 	CS_High();

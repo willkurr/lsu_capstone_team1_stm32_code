@@ -12,6 +12,7 @@
 
 uint8_t Wireless_ReadRegister(uint8_t reg);
 void Wireless_WriteRegister(uint8_t reg, uint8_t value);
+void Wireless_WriteValue(uint8_t value);
 void Wireless_PowerOn();
 void Wireless_PowerDown();
 void Wireless_EnableContinuousWave();
