@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "wireless.h"
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -132,7 +133,6 @@ int main(void)
   Wireless_PowerOn();
 
 	//Wireless_TotalRegisterReset();
-	int connected = Wireless_TxHandshake();
 
   /* USER CODE END 2 */
 
@@ -143,6 +143,36 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  /*Beginning of Caleb's edits
+	   * change if necessary
+	   * I'm a peasant
+	   * I also added <stdbool.h> in line 25 if that's allowed
+	   */
+	  bool buttonPushed;
+	  bool handshakeBegun;
+	  bool handshakeDone;
+	  bool connected;
+	  if (handshakeBegun) {							//if handshake has already been initiated
+		  bool txDS = Wireless_Check_TXDS();		//check the TX_DS flag (indicates that ACK has been received)
+		  if (!txDS) {								//if ACK not received
+			  CE_High();							//reenters transmit mode
+			  connected = false;
+		  }
+		  else {									//if ACK has been received
+			  handshakeBegun = false;				//reset handshakeBegun bool
+			  handshakeDone = true;					//indicate handshake was successful
+			  connected = true;						//indicate the devices are connected
+		  }
+	  }
+	  buttonPushed = true;
+	  if (buttonPushed && !handshakeDone) {							//if an external button is triggered to indicate to start handshake
+		  Wireless_StartTxHandshake();				//send first transmission to connect to receiver
+		  handshakeBegun = true;					//indicate that the handshake has begun
+	  }
+	  buttonPushed = false;
+	  /*
+	   * end of Caleb's edits
+	   */
 	  //Wireless_EnableContinuousWave();
 	  //HAL_Delay(1000);
 	  //Wireless_DisableContinuousWave();

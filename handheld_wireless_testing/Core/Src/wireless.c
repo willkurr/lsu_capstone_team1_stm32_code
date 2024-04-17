@@ -7,6 +7,7 @@
 
 #include "main.h"
 #include "wireless.h"
+#include <stdbool.h>
 
 extern SPI_HandleTypeDef hspi2;
 
@@ -93,6 +94,19 @@ void Wireless_DisableContinuousWave() {
  * change if necessary;
  * I'm a peasant;
  */
+
+void Wireless_Update_RFChannel(uint8_t rfChannel) {
+	uint8_t rfChReg = Wireless_ReadRegister(0x05);
+	rfChReg |= rfChannel;
+	rfChReg &= rfChannel;
+	Wireless_WriteRegister(0x05, rfChReg);
+}
+
+void Wireless_Flush_TXPayload(){
+	uint8_t flushTx = 0xE1;
+	Wireless_WriteValue(flushTx);
+}
+
 void Wireless_CONFIG_RegReset() {
 	//reset CONFIG register
 	uint8_t configReg = Wireless_ReadRegister(0x00);
@@ -271,53 +285,95 @@ void Wireless_TotalRegisterReset() {
 	Wireless_FEATURE_RegReset();		//reset FEATURE register
 }
 
+bool Wireless_Check_MAXRT() {
+	uint8_t statusReg = Wireless_ReadRegister (0x07);
+	uint8_t maxRT = statusReg & 0x10;
+
+	if (maxRT == 0x10) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Wireless_Check_TXDS() {
+	uint8_t statusReg = Wireless_ReadRegister (0x07);
+	uint8_t txDS = statusReg & 0x20;
+
+	if (txDS == 0x20) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Wireless_Check_TXFIFIO_Full() {
+	uint8_t statusReg = Wireless_ReadRegister (0x07);
+	uint8_t txFIFOFull = statusReg & 0x01;
+
+	if (txFIFOFull == 0x01) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void Wireless_WriteTXPayload(uint8_t payload[], int pldSize) {
+
+	uint8_t wTxPldCommand = 0xA0;							//W_TX_PAYLOAD SPI command to write TX pay load
+	CS_Low();
+	HAL_SPI_Transmit(&hspi2, &wTxPldCommand, 1, 100);		//send write command
+	HAL_SPI_Transmit(&hspi2, &payload, pldSize, 100);		//write pay load into FIFO
+	CS_High();
+}
+
+void Wireless_Write_RetransmitDelayandCount(uint8_t retranDelay, uint8_t retranCount) {
+	retranDelay = retranDelay << 4;						//delay determined by bits 7-4 of SETUP register
+	uint8_t setupReg = Wireless_ReadRegister(0x04);
+	setupReg |= retranDelay;							//set retransmit delay
+	setupReg |= retranCount;							//set retransmit count
+	Wireless_WriteRegister(0x04, setupReg);
+}
 /*
  * Initiates wireless connection handshake by the transmitter
  * @return The connection status after the handshake attempt
  */
-uint8_t Wireless_TxHandshake() {
+uint8_t Wireless_StartTxHandshake() {
 
-	uint8_t rfChannel = 0x01;
-	uint8_t rfChReg = Wireless_ReadRegister(0x05);
-	rfChReg |= rfChannel;
-	rfChReg &= rfChannel;
-	Wireless_WriteRegister(0x05, rfChReg);
+	CE_Low();
 
-	uint8_t flushTx = 0xE1;
-	Wireless_WriteValue(flushTx);
+	Wireless_Update_RFChannel(0x01);
 
-	uint8_t statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
-	uint8_t rfReg = statusReg & 0x10;						//bitwise AND the register w/ 0001 0000
-	uint8_t txDSReg = statusReg & 0x20;						//if the result is 0x10, MAX_RT (bit 4) is triggered
+	Wireless_Flush_TXPayload();
+
+	Wireless_Check_MAXRT();
+	Wireless_Check_TXDS();
+	Wireless_Check_TXFIFO_Full();
+//read STATUS register
+//bitwise AND the register w/ 0001 0000
+//if the result is 0x10, MAX_RT (bit 4) is triggered
+
+	uint8_t retransmitDelay = 0b1111;						//4 bit delay value based on data sheet
+	uint8_t retransmitCount = 0b1111;						//4 bit count value based on data sheet
+	Wireless_Write_RetransmitDelayandCount(retransmitDelay, retransmitCount);
 															//if result is 0x00, MAX_RT is not triggered
-
-	CE_Low();												// set CE pin to 1 for > 1us
 															//enter transmit mode
 	uint8_t configReg = Wireless_ReadRegister(0x00);		//read CONFIG register
 	bitclear(configReg,0);									//clear bit 0 (PRIM_RX) of CONFIG register
 	Wireless_WriteRegister(0x00,configReg);					// set PRIM_RX to 0
 
-	uint8_t connPld = 0x01;									//connection pay load to be transmitted
-	uint8_t wTxPldCommand = 0xA0;							//W_TX_PAYLOAD SPI command to write TX pay load
-	CS_Low();
-	HAL_SPI_Transmit(&hspi2, &wTxPldCommand, 1, 100);		//send write command
-	HAL_SPI_Transmit(&hspi2, &connPld, 1, 100);				//write connect pay load into FIFO
-	CS_High();
-	uint8_t retransmitDelay = 0b1111;						//4 bit delay value based on data sheet
-	uint8_t retransmitCount = 0b1111;						//4 bit count value based on data sheet
-
-	retransmitDelay = retransmitDelay << 4;									//delay determined by bits 7-4 of SETUP register
-	uint8_t setupReg = Wireless_ReadRegister(0x04);
-	setupReg |= retransmitDelay;							//set retransmit delay
-	setupReg |= retransmitCount;							//set retransmit count
+	uint8_t connPld = 0x01;
+	Wireless_WriteTxPayload(connPld, 1);
 
 	CE_High();
 															//transmit connect packet
 															//flush TX FIFO (will auto check for ACK)
-											// set CE pin to 1 for > 1us
+															// set CE pin to 1 for > 1us
 
-	HAL_Delay(1000);
-	uint8_t attempts = 100;										//number of attempts allowed later specified
+	uint8_t attempts = 100;									//number of attempts allowed later specified
 	uint8_t attemptCounter = 1;								//one connection attempt has been made
 
 	statusReg = Wireless_ReadRegister (0x07);		//read STATUS register

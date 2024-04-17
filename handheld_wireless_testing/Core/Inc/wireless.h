@@ -23,6 +23,8 @@ void Wireless_DisableContinuousWave();
  * change if necessary;
  * I'm a peasant
  */
+void Wireless_Update_RFChannel(uint8_t rfChannel);
+void Wireless_Flush_TXPayload();
 void Wireless_CONFIG_RegReset();
 void Wireless_ENAA_RegReset();
 void Wireless_ENRXADDR_RegReset();
@@ -40,7 +42,12 @@ void Wireless_RXPWP5_RegReset();
 void Wireless_DYNPD_RegReset();
 void Wireless_FEATURE_RegReset();
 void Wireless_TotalRegisterReset();
-uint8_t Wireless_TxHandshake();
+bool Wireless_Check_MAXRT();
+bool Wireless_Check_TXDS();
+bool Wireless_Check_TXFIFIO_Full();
+void Wireless_WriteTXPayload(uint8_t payload[], int pldSize);
+void Wireless_Write_RetransmitDelayandCount(uint8_t retranDelay, uint8_t retranCount);
+uint8_t Wireless_StartTxHandshake();
 uint8_t Wireless_RxHandshake();
 void Wireless_UpdateRxAddress(uint8_t rxUID[]);
 /*
