@@ -9,6 +9,7 @@
 #include "main.h"
 
 extern ADC_HandleTypeDef hadc1;
+extern void Error_Handler(void);
 
 /**
  * Reads the 14 bit value of the handheld device ADC.
@@ -18,7 +19,7 @@ uint32_t readHandheldADC() {
 	HAL_ADC_Start(&hadc1);
 
 	if (HAL_ADC_PollForConversion(&hadc1,1000) != HAL_OK) {
-		uint8_t somethingBadHappened = 1;
+		Error_Handler();
 	}
 
 	return HAL_ADC_GetValue(&hadc1);
