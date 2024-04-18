@@ -18,7 +18,7 @@ struct Typography
 
 struct TypographyFontIndex
 {
-    static const touchgfx::FontId DEFAULT = 0; // Asap_Regular_80_4bpp
+    static const touchgfx::FontId DEFAULT = 0; // Asap_Regular_28_4bpp
     static const uint16_t NUMBER_OF_FONTS = 1;
 };
 

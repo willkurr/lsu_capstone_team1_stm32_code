@@ -5,11 +5,70 @@
         "Name": "Main",
         "Components": [
           {
-            "Type": "Image",
-            "Name": "image1",
+            "Type": "Box",
+            "Name": "box1",
             "Width": 320,
             "Height": 240,
-            "RelativeFilename": "doom.png"
+            "Color": {
+              "Red": 76,
+              "Green": 76,
+              "Blue": 76
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "adctesting_text",
+            "X": 50,
+            "Width": 221,
+            "Height": 34,
+            "TextId": "__SingleUse_XW9I",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "adcrawvalue_text",
+            "X": 10,
+            "Y": 103,
+            "Width": 207,
+            "Height": 34,
+            "TextId": "__SingleUse_7C6U",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true,
+            "Wildcard1": {
+              "TextId": "adc_raw_value_wildcard",
+              "UseBuffer": true,
+              "BufferSize": 5
+            }
+          },
+          {
+            "Type": "BoxProgress",
+            "Name": "boxProgress1",
+            "X": 10,
+            "Y": 211,
+            "Width": 300,
+            "Height": 10,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Direction": "Right",
+            "FileNameBackground": "__generated\\alternate_theme_images_widgets_boxprogress_normal_medium.png",
+            "IndicatorPositionWidth": 300,
+            "IndicatorPositionHeight": 10,
+            "ProgressRangeMax": 100,
+            "ProgressInitialValue": 60
           }
         ],
         "Interactions": []
@@ -63,7 +122,7 @@
     "SubFamily": "STM32U5x5",
     "Toolchain": "STM32CubeIDE",
     "Platform": "m33",
-    "ProjectFile": "../handheld_display_testing.ioc",
+    "ProjectFile": "../handheld_adc_testing.ioc",
     "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
     "OptionalComponents": [],
     "AdditionalFeatures": []

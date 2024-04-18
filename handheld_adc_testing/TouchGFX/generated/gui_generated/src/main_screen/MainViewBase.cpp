@@ -3,6 +3,7 @@
 /*********************************************************************************/
 #include <gui_generated/main_screen/MainViewBase.hpp>
 #include <touchgfx/Color.hpp>
+#include <texts/TextKeysAndLanguages.hpp>
 #include <images/BitmapDatabase.hpp>
 
 MainViewBase::MainViewBase()
@@ -11,9 +12,33 @@ MainViewBase::MainViewBase()
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     add(__background);
 
-    image1.setXY(0, 0);
-    image1.setBitmap(touchgfx::Bitmap(BITMAP_DOOM_ID));
-    add(image1);
+    box1.setPosition(0, 0, 320, 240);
+    box1.setColor(touchgfx::Color::getColorFromRGB(76, 76, 76));
+    add(box1);
+
+    adctesting_text.setXY(50, 0);
+    adctesting_text.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    adctesting_text.setLinespacing(0);
+    adctesting_text.setTypedText(touchgfx::TypedText(T___SINGLEUSE_XW9I));
+    add(adctesting_text);
+
+    adcrawvalue_text.setXY(10, 103);
+    adcrawvalue_text.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    adcrawvalue_text.setLinespacing(0);
+    Unicode::snprintf(adcrawvalue_textBuffer, ADCRAWVALUE_TEXT_SIZE, "%s", touchgfx::TypedText(T_ADC_RAW_VALUE_WILDCARD).getText());
+    adcrawvalue_text.setWildcard(adcrawvalue_textBuffer);
+    adcrawvalue_text.resizeToCurrentText();
+    adcrawvalue_text.setTypedText(touchgfx::TypedText(T___SINGLEUSE_7C6U));
+    add(adcrawvalue_text);
+
+    boxProgress1.setXY(10, 211);
+    boxProgress1.setProgressIndicatorPosition(0, 0, 300, 10);
+    boxProgress1.setRange(0, 100);
+    boxProgress1.setDirection(touchgfx::AbstractDirectionProgress::RIGHT);
+    boxProgress1.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BOXPROGRESS_NORMAL_MEDIUM_ID));
+    boxProgress1.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    boxProgress1.setValue(60);
+    add(boxProgress1);
 }
 
 MainViewBase::~MainViewBase()

@@ -5,8 +5,19 @@
   </Languages>
   <Texts>
     <TextGroup Id="Group1" />
+    <TextGroup Id="Unsorted">
+      <Text Id="adc_raw_value_wildcard" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">none</Translation>
+      </Text>
+      <Text Id="__SingleUse_7C6U" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">Raw Value: &lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_XW9I" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">ADC Testing Code</Translation>
+      </Text>
+    </TextGroup>
   </Texts>
   <Typographies>
-    <Typography Id="Default" Font="Asap-Regular.ttf" Size="80" Bpp="4" IsVector="no" Direction="LTR" WildcardCharacterRanges="0-9" />
+    <Typography Id="Default" Font="Asap-Regular.ttf" Size="28" Bpp="4" IsVector="no" Direction="LTR" WildcardCharacterRanges="0-9" />
   </Typographies>
 </TextDatabase>
