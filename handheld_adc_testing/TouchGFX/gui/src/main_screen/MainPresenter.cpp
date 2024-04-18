@@ -13,3 +13,7 @@ void MainPresenter::activate()
 void MainPresenter::deactivate()
 {
 }
+
+void MainPresenter::notifyMethaneADCValueChanged(uint16_t adcValue) {
+	view.updateADCValue(adcValue);
+}

@@ -5,22 +5,26 @@
  *      Author: willkurr
  */
 
-#include <methane_detector.h>
+#include "methane_detector.h"
 #include "main.h"
 
 extern ADC_HandleTypeDef hadc1;
 extern void Error_Handler(void);
 
 /**
- * Reads the 14 bit value of the handheld device ADC.
- * @return the ADC's 14 bit measured value
+ * Starts methane sensor ADC conversion on handheld device and calls HAL_ADC_ConvCpltCallback when done
  */
-uint32_t readHandheldADC() {
-	HAL_ADC_Start(&hadc1);
-
-	if (HAL_ADC_PollForConversion(&hadc1,100) != HAL_OK) {
-		Error_Handler();
-	}
-
-	return HAL_ADC_GetValue(&hadc1);
+void startHandheldADC() {
+	HAL_ADC_Start_IT(&hadc1);
 }
+
+/**
+ * Gets the value read by the methane sensor ADC on the handheld. Should be called after startHandheldADC()
+ * and after newADCValueReady = 1.
+ * @return the 14 bit value read by the ADC
+ */
+uint16_t getHandheldADCValue() {
+	return (uint16_t)HAL_ADC_GetValue(&hadc1);
+}
+
+

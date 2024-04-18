@@ -27,6 +27,10 @@ public:
     {
         model = m;
     }
+
+    //Overrided in MainPresenter.hpp
+    virtual void notifyMethaneADCValueChanged(uint16_t newValue) {}
+
 protected:
     Model* model;
 };

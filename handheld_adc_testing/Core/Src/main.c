@@ -84,6 +84,14 @@ static void MX_TIM6_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// globals only visible to main.c
+uint8_t adcConvInProgress = 0;
+uint8_t readyToGetADCValue = 0;
+
+// globals from methane_detetor.h
+uint16_t adcValue = 0;
+volatile uint8_t newADCValueReady = 0;
+
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 	// LCD DMA transfer and SPI transmission complete, see if there are more bytes to send and start another DMA transfer if so
 	if (hspi == &hspi1) {
@@ -107,8 +115,13 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 	}
 }
 
-uint16_t adcValue = 0;
-bool adcValueReady = false;
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+	if (hadc == &hadc1) {
+		readyToGetADCValue = 1;
+		adcConvInProgress = 0;
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -167,8 +180,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //Note that this is blocking until the ADC is done reading. Should probably have a start function then check every iteration of this loop to see if done.
-	  adcValue = (uint16_t)readHandheldADC();
+	  if (!readyToGetADCValue && !newADCValueReady && !adcConvInProgress) {
+		  adcConvInProgress = 1;
+		  startHandheldADC();
+	  }
+	  else if (readyToGetADCValue) {
+		  adcValue = getHandheldADCValue();
+		  readyToGetADCValue = 0;
+		  newADCValueReady = 1;
+	  }
+
     /* USER CODE END WHILE */
 
   MX_TouchGFX_Process();
@@ -854,6 +875,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 
 /* USER CODE END 4 */
 
