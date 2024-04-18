@@ -18,7 +18,7 @@ extern void Error_Handler(void);
 uint32_t readHandheldADC() {
 	HAL_ADC_Start(&hadc1);
 
-	if (HAL_ADC_PollForConversion(&hadc1,1000) != HAL_OK) {
+	if (HAL_ADC_PollForConversion(&hadc1,100) != HAL_OK) {
 		Error_Handler();
 	}
 
