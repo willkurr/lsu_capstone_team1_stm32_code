@@ -152,10 +152,10 @@ int main(void)
 	  bool handshakeBegun;
 	  bool handshakeDone;
 	  bool connected;
-	  if (handshakeBegun) {							//if handshake has already been initiated
+	  if (handshakeBegun && !connected) {			//if handshake has already been initiated
 		  bool txDS = Wireless_Check_TXDS();		//check the TX_DS flag (indicates that ACK has been received)
 		  if (!txDS) {								//if ACK not received
-			  CE_High();							//reenters transmit mode
+			  Wireless_TransmitPld(0x00); 			//reenters transmit mode
 			  connected = false;
 		  }
 		  else {									//if ACK has been received
@@ -165,7 +165,7 @@ int main(void)
 		  }
 	  }
 	  buttonPushed = true;
-	  if (buttonPushed && !handshakeDone) {							//if an external button is triggered to indicate to start handshake
+	  if (buttonPushed && !handshakeDone) {			//if an external button is triggered to indicate to start handshake
 		  Wireless_StartTxHandshake();				//send first transmission to connect to receiver
 		  handshakeBegun = true;					//indicate that the handshake has begun
 	  }

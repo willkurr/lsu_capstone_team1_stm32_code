@@ -285,6 +285,8 @@ void Wireless_TotalRegisterReset() {
 	Wireless_FEATURE_RegReset();		//reset FEATURE register
 }
 
+
+
 bool Wireless_Check_MAXRT() {
 	uint8_t statusReg = Wireless_ReadRegister (0x07);
 	uint8_t maxRT = statusReg & 0x10;
@@ -296,6 +298,8 @@ bool Wireless_Check_MAXRT() {
 		return false;
 	}
 }
+
+
 
 bool Wireless_Check_TXDS() {
 	uint8_t statusReg = Wireless_ReadRegister (0x07);
@@ -309,7 +313,9 @@ bool Wireless_Check_TXDS() {
 	}
 }
 
-bool Wireless_Check_TXFIFIO_Full() {
+
+
+bool Wireless_Check_TXFIFO_Full() {
 	uint8_t statusReg = Wireless_ReadRegister (0x07);
 	uint8_t txFIFOFull = statusReg & 0x01;
 
@@ -321,14 +327,17 @@ bool Wireless_Check_TXFIFIO_Full() {
 	}
 }
 
-void Wireless_WriteTXPayload(uint8_t payload[], int pldSize) {
 
+
+void Wireless_WriteTXPayload(uint8_t *payload, int pldSize) {
 	uint8_t wTxPldCommand = 0xA0;							//W_TX_PAYLOAD SPI command to write TX pay load
 	CS_Low();
 	HAL_SPI_Transmit(&hspi2, &wTxPldCommand, 1, 100);		//send write command
-	HAL_SPI_Transmit(&hspi2, &payload, pldSize, 100);		//write pay load into FIFO
+	HAL_SPI_Transmit(&hspi2, payload, pldSize, 100);		//write pay load into FIFO
 	CS_High();
 }
+
+
 
 void Wireless_Write_RetransmitDelayandCount(uint8_t retranDelay, uint8_t retranCount) {
 	retranDelay = retranDelay << 4;						//delay determined by bits 7-4 of SETUP register
@@ -337,6 +346,26 @@ void Wireless_Write_RetransmitDelayandCount(uint8_t retranDelay, uint8_t retranC
 	setupReg |= retranCount;							//set retransmit count
 	Wireless_WriteRegister(0x04, setupReg);
 }
+
+
+
+void Wireless_TransmitPld(uint8_t payload[]) {
+	CE_Low();												//assure CE is low
+
+	if (payload != 0x00) {									//if the user wants to use the same pay load, set as 0
+		Wireless_Flush_TXPayload();							//empty TX FIFO
+		int size = sizeof(payload);
+		Wireless_WriteTXPayload(payload, size);				//write the desired pay load into the TX FIFO
+	}
+	uint8_t configReg = Wireless_ReadRegister(0x00);		//read CONFIG register
+	bitclear(configReg,0);									//clear bit 0 (PRIM_RX) of CONFIG register
+	Wireless_WriteRegister(0x00,configReg);					// set PRIM_RX to 0
+
+	CE_High();												//set CE high to enter transmit mode and begin transmission
+}
+
+
+
 /*
  * Initiates wireless connection handshake by the transmitter
  * @return The connection status after the handshake attempt
@@ -349,9 +378,9 @@ uint8_t Wireless_StartTxHandshake() {
 
 	Wireless_Flush_TXPayload();
 
-	Wireless_Check_MAXRT();
-	Wireless_Check_TXDS();
-	Wireless_Check_TXFIFO_Full();
+	bool maxRT = Wireless_Check_MAXRT();
+	bool txDS = Wireless_Check_TXDS();
+	bool txFIFOFull = Wireless_Check_TXFIFO_Full();
 //read STATUS register
 //bitwise AND the register w/ 0001 0000
 //if the result is 0x10, MAX_RT (bit 4) is triggered
@@ -361,14 +390,11 @@ uint8_t Wireless_StartTxHandshake() {
 	Wireless_Write_RetransmitDelayandCount(retransmitDelay, retransmitCount);
 															//if result is 0x00, MAX_RT is not triggered
 															//enter transmit mode
-	uint8_t configReg = Wireless_ReadRegister(0x00);		//read CONFIG register
-	bitclear(configReg,0);									//clear bit 0 (PRIM_RX) of CONFIG register
-	Wireless_WriteRegister(0x00,configReg);					// set PRIM_RX to 0
+	uint8_t connPld[] = {0x89, 0xAB, 0xCD, 0xEF};
+	Wireless_TransmitPld(connPld);
+	//Wireless_WriteTxPayload(connPld, 1);
 
-	uint8_t connPld = 0x01;
-	Wireless_WriteTxPayload(connPld, 1);
-
-	CE_High();
+	//CE_High();
 															//transmit connect packet
 															//flush TX FIFO (will auto check for ACK)
 															// set CE pin to 1 for > 1us
@@ -376,9 +402,11 @@ uint8_t Wireless_StartTxHandshake() {
 	uint8_t attempts = 100;									//number of attempts allowed later specified
 	uint8_t attemptCounter = 1;								//one connection attempt has been made
 
-	statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
-	rfReg = statusReg & 0x10;						//bitwise AND the register w/ 0001 0000
-	txDSReg = statusReg & 0x20;						//if the result is 0x10, MAX_RT (bit 4) is triggered
+	maxRT = Wireless_Check_MAXRT();
+	txDS = Wireless_Check_TXDS();
+	uint8_t statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
+	//rfReg = statusReg & 0x10;						//bitwise AND the register w/ 0001 0000
+	//txDSReg = statusReg & 0x20;						//if the result is 0x10, MAX_RT (bit 4) is triggered
 															//if result is 0x00, MAX_RT is not triggered
 
 	/*while (rfReg == 0x10 && attemptCounter < attempts) {	//while MAX_RT is triggered (no ACK) retry connection
@@ -399,7 +427,7 @@ uint8_t Wireless_StartTxHandshake() {
 	Wireless_WriteRegister(0x07, 0x10); 					//reset MAX_RT flag
 
 	int connected;											//variable for confirming connection
-	if (rfReg == 0x10) {									//if MAX_RT triggered
+	if (maxRT) {									//if MAX_RT triggered
 		connected == 0;									//still not connected
 	}
 	else {
