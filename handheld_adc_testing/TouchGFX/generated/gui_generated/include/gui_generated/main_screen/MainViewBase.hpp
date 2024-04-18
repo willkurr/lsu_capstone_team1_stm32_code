@@ -8,7 +8,9 @@
 #include <mvp/View.hpp>
 #include <gui/main_screen/MainPresenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
-#include <touchgfx/widgets/Image.hpp>
+#include <touchgfx/widgets/TextArea.hpp>
+#include <touchgfx/widgets/TextAreaWithWildcard.hpp>
+#include <touchgfx/containers/progress_indicators/BoxProgress.hpp>
 
 class MainViewBase : public touchgfx::View<MainPresenter>
 {
@@ -26,7 +28,16 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
-    touchgfx::Image image1;
+    touchgfx::Box box1;
+    touchgfx::TextArea adctesting_text;
+    touchgfx::TextAreaWithOneWildcard adcrawvalue_text;
+    touchgfx::BoxProgress boxProgress1;
+
+    /*
+     * Wildcard Buffers
+     */
+    static const uint16_t ADCRAWVALUE_TEXT_SIZE = 5;
+    touchgfx::Unicode::UnicodeChar adcrawvalue_textBuffer[ADCRAWVALUE_TEXT_SIZE];
 
 private:
 

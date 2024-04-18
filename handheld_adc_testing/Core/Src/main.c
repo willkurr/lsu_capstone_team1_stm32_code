@@ -106,15 +106,9 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 		}
 	}
 }
-/* i put this function in stm32u5xx_it.c
-extern void signalVSyncWrapper(void);
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if (htim == &htim6) {
-		signalVSyncWrapper();	// Tells TouchGFX that the display is ready to receive the next framebuffer
-	}
-}
-*/
+uint16_t adcValue = 0;
+bool adcValueReady = false;
 /* USER CODE END 0 */
 
 /**
@@ -166,17 +160,15 @@ int main(void)
   ILI9341_SetDisplayBrightness(&htim8,100);	//set backlight brightness to 100%
 
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_4);		// Enable complementary PWM on channel 4 of timer 8 (backlight brightness control)
-  HAL_TIM_Base_Start_IT(&htim6);					// Start TIM6 to generate an interrupt every 1 second for calling TouchGFX vsync function
-
-  uint32_t adcValue = 0;
+  HAL_TIM_Base_Start_IT(&htim6);					// Start TIM6 to generate an interrupt every 1 second for calling TouchGFX vsync function. See stm32u5xx_it.c for call to vsync function
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-	  adcValue = readHandheldADC();
+	  //Note that this is blocking until the ADC is done reading. Should probably have a start function then check every iteration of this loop to see if done.
+	  adcValue = (uint16_t)readHandheldADC();
     /* USER CODE END WHILE */
 
   MX_TouchGFX_Process();

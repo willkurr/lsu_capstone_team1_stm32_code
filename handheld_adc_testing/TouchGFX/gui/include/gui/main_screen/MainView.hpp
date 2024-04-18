@@ -10,8 +10,6 @@ public:
     MainView();
     ~MainView() {};
     virtual void setupScreen();
-    virtual void increaseValue();
-    virtual void decreaseValue();
 
     void updateGFXElements();
 protected:
