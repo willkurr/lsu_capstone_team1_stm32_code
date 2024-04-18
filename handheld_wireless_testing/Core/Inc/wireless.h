@@ -9,6 +9,7 @@
 #define INC_WIRELESS_H_
 
 #include "main.h"
+#include <stdbool.h>
 
 uint8_t Wireless_ReadRegister(uint8_t reg);
 void Wireless_WriteRegister(uint8_t reg, uint8_t value);
@@ -44,7 +45,7 @@ void Wireless_FEATURE_RegReset();
 void Wireless_TotalRegisterReset();
 bool Wireless_Check_MAXRT();
 bool Wireless_Check_TXDS();
-bool Wireless_Check_TXFIFIO_Full();
+bool Wireless_Check_TXFIFO_Full();
 void Wireless_WriteTXPayload(uint8_t payload[], int pldSize);
 void Wireless_Write_RetransmitDelayandCount(uint8_t retranDelay, uint8_t retranCount);
 uint8_t Wireless_StartTxHandshake();
