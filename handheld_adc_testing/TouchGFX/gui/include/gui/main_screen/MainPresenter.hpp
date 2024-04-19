@@ -27,7 +27,7 @@ public:
 
     virtual ~MainPresenter() {};
 
-    virtual void notifyMethaneADCValueChanged(uint16_t adcValue);
+    virtual void notifyMethaneADCValueChanged(uint16_t newValue);
 
 private:
     MainPresenter();

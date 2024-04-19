@@ -14,9 +14,8 @@ void MainView::updateGFXElements() {}
  * Updates the screen with the adcValue in the adcrawvalue wildcard.
  * @param adcValue The 14-bit adc value to insert
  */
-void MainView::updateADCValue(uint16_t adcValue) {
+void MainView::updateADCValue(uint16_t newValue) {
 	boxProgress1.setValue(25);
-	Unicode::snprintf(adcrawvalue_textBuffer,ADCRAWVALUE_TEXT_SIZE,"%d",adcValue);
+	Unicode::snprintf(adcrawvalue_textBuffer,ADCRAWVALUE_TEXT_SIZE,"%d",newValue);
 	adcrawvalue_text.invalidate();
-	boxProgress1.invalidate();
 }

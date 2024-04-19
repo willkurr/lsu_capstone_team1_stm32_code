@@ -27,7 +27,7 @@ SOFTWARE.
 
  */
 
-#include <ili9341.h>
+#include "ili9341.h"
 #include "main.h"
 #include <stdbool.h>
 
