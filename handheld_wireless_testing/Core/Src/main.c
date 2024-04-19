@@ -170,6 +170,38 @@ int main(void)
 		  handshakeBegun = true;					//indicate that the handshake has begun
 	  }
 	  buttonPushed = false;
+
+
+	  //receiver operation code
+	  bool rxButtonPushed;
+	  bool rxConnected;
+	  bool rxHandshakeBegun;
+	  bool rxHandshakeDone;
+	  uint8_t rfChannel;
+
+	  if (rxHandshakeBegun && !rxConnected) {
+		  bool rxDR = Wireless_Check_RXDR();
+		  if (!rxDR) {
+			  rfChannel = rfChannel + 1;
+			  Wireless_Update_RFChannel(rfChannel);
+			  Wireless_ReceiveMode();
+			  rxConnected = false;
+		  }
+		  else {
+			  rxConnected = true;
+			  rxHandshakeBegun = false;
+			  rxHandshakeDone = true;
+		  }
+	  }
+
+	  rxButtonPushed = true;
+	  if (rxButtonPushed && !rxConnected) {
+		  Wireless_RxHandshake();
+		  rxHandshakeBegun = true;
+		  rfChannel = 0x01;
+	  }
+	  rxButtonPushed = false;
+
 	  /*
 	   * end of Caleb's edits
 	   */
