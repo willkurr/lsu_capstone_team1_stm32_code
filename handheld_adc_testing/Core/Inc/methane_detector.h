@@ -14,7 +14,25 @@
 
 #include "main.h"
 
-uint32_t readHandheldADC();
+//Global variables that need to be passed to TouchGFX
+// START GLOBAL EXTERN DEFINITIONS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern uint16_t adcValue;
+extern volatile uint8_t newADCValueReady;
+
+#ifdef __cplusplus
+}
+#endif
+// END GLOBAL EXTERN DEFINITIONS
+
+void startHandheldADC();
+uint16_t getHandheldADCValue();
+
+//Callback implementations
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 
 
 #endif /* INC_METHANE_DETECTOR_H_ */

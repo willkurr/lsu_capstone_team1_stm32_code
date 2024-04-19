@@ -18,6 +18,6 @@
     </TextGroup>
   </Texts>
   <Typographies>
-    <Typography Id="Default" Font="Asap-Regular.ttf" Size="28" Bpp="4" IsVector="no" Direction="LTR" WildcardCharacterRanges="0-9" />
+    <Typography Id="Default" Font="Asap-Regular.ttf" Size="28" Bpp="4" IsVector="no" Direction="LTR" WildcardCharacters="0-9" WildcardCharacterRanges="0-9" />
   </Typographies>
 </TextDatabase>

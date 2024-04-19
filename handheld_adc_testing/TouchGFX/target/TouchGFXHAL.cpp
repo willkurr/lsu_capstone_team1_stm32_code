@@ -97,12 +97,14 @@ void TouchGFXHAL::flushFrameBuffer(const touchgfx::Rect& rect)
 
 	if (!isTransmitting) {
 		// Set the ILI9341 GRAM "window" to update
-		ILI9341_SetWindow(rect.x, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
+		//ILI9341_SetWindow(rect.x, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);								ADD THIS BACK!
+		ILI9341_SetWindow(0, 0, 319, 239);	//TESTING
 		// Get the address of the framebuffer and recast as pointer to 8 bit values since getTFTFrameBuffer returns uint16_t*,
 		// and also advance the starting address of the framebuffer to the first byte described by the rect
-		uint8_t *frameBuffer = TouchGFXGeneratedHAL::advanceFrameBufferToRect((uint8_t*)getTFTFrameBuffer(), rect);
+		//uint8_t *frameBuffer = TouchGFXGeneratedHAL::advanceFrameBufferToRect((uint8_t*)getTFTFrameBuffer(), rect);		ADD THIS BACK!
 		// Write the data to the display, non-blocking
-		ILI9341_DrawBitmap(rect.width, rect.height, frameBuffer);	//This function also sets isTransmitting to true.
+		//ILI9341_DrawBitmap(rect.width, rect.height, frameBuffer);	//This function also sets isTransmitting to true.		ADD THIS BACK!
+		ILI9341_DrawBitmap(320, 240, (uint8_t*)getTFTFrameBuffer());
 	}
 	else {
 		//Do nothing. Transmission is already happening and we are not ready to write the next rect to the display.

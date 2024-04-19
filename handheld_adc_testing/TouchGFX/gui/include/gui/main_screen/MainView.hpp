@@ -12,6 +12,7 @@ public:
     virtual void setupScreen();
 
     void updateGFXElements();
+    void updateADCValue(uint16_t newValue);
 protected:
 
 private:
