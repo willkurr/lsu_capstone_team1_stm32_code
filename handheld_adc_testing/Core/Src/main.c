@@ -95,22 +95,40 @@ volatile uint8_t newADCValueReady = 0;
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 	// LCD DMA transfer and SPI transmission complete, see if there are more bytes to send and start another DMA transfer if so
 	if (hspi == &hspi1) {
-		if (framebufferTooBig) {
-			framebufferLocation += UINT16_MAX;
+		// Code for transmitting framebuffer with entire display width
+		if (width == 320) {
+			if (framebufferTooBig) {
+				framebufferLocation += UINT16_MAX;
 
-			if (bytesLeft > UINT16_MAX) {
-				HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, UINT16_MAX);
-				bytesLeft -= UINT16_MAX;
-				framebufferTooBig = true;
+				if (bytesLeft > UINT16_MAX) {
+					HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, UINT16_MAX);
+					bytesLeft -= UINT16_MAX;
+					framebufferTooBig = true;
+				}
+				else {
+					HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, bytesLeft);
+					bytesLeft = 0;
+					framebufferTooBig = false;
+				}
 			}
 			else {
-				HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, bytesLeft);
-				bytesLeft = 0;
-				framebufferTooBig = false;
+				isTransmitting = false;
+				hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+				HAL_SPI_Init(&hspi1);
 			}
 		}
+		// Code for transmitting rectangular portion of framebuffer (portion to transmit is not entire width of display)
 		else {
-			isTransmitting = false;
+			currentLine++;
+			if (currentLine != height) {
+				framebufferLocation += 320*2;	//Go to next line of framebuffer that needs to be written
+				HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, width*2);
+			}
+			else {
+				isTransmitting = false;
+				hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+				HAL_SPI_Init(&hspi1);
+			}
 		}
 	}
 }

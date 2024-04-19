@@ -57,6 +57,9 @@ uint8_t *framebufferLocation;	//Global variable, holds the location of the frame
 uint32_t bytesLeft = 0;			//Global variable, holds the number of bytes left to be written in case ILI9341_DrawBitmap() can't draw entire buffer at once
 bool framebufferTooBig = false;
 bool isTransmitting = false;	//Global variable, set to true while DMA transfer is in progress from ILI9341_DrawBitmap(), set to false in SPI complete callback
+uint16_t width = 0;
+uint16_t height = 0;
+uint16_t currentLine = 0;
 
 // Initialization
 void ILI9341_Init(void)
@@ -224,26 +227,57 @@ void ILI9341_DrawBitmap(uint16_t w, uint16_t h, uint8_t *data)
 
 	DC_H();
 
-	uint32_t dataSize = w*h*2;		// number of bytes in data buffer
-	uint32_t *lastData = (uint32_t*)(data + dataSize);	//address of last element of data buffer
+	width = w;
+	height = h;
 
-	// swap data byte endianess for ILI9341 display
-	for (uint32_t *data32=(uint32_t*)data; data32<lastData; data32++) {
-		*data32=__REV16(*data32);
+	hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
+	HAL_SPI_Init(&hspi1);
+
+	// Code for transmitting framebuffer with entire width of display
+	if (w == 320) {
+		uint32_t dataSize = w*h*2;		// number of bytes in data buffer
+		/*
+		uint32_t *lastData = (uint32_t*)(data + dataSize);	//address of last element of data buffer
+
+		// swap data byte endianess for ILI9341 display
+		for (uint32_t *data32=(uint32_t*)data; data32<lastData; data32++) {
+			*data32=__REV16(*data32);
+		}
+		*/
+
+		// if there are too many bytes to transmit with a single HAL_SPI_Transmit_DMA()
+		if (w*h*2 > UINT16_MAX) {
+			//save the framebuffer location to global variable, transmit the first portion of the framebuffer, and calculate remaining bytes left
+			framebufferLocation = data;
+
+			HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, UINT16_MAX);
+			bytesLeft = dataSize - UINT16_MAX;
+			framebufferTooBig = true;
+		}
+		else {
+			HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, dataSize);
+		}
 	}
-
-	// if there are too many bytes to transmit with a single HAL_SPI_Transmit_DMA()
-	if (w*h*2 > UINT16_MAX) {
-		//save the framebuffer location to global variable, transmit the first portion of the framebuffer, and calculate remaining bytes left
-		framebufferLocation = data;
-
-		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, UINT16_MAX);
-		bytesLeft = dataSize - UINT16_MAX;
-		framebufferTooBig = true;
-	}
+	// Code for transmitting rectangular portion of framebuffer (portion to transmit is not entire width of display)
 	else {
-		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, dataSize);
+		/*
+		// for each line in the rectangular portion of the display that is being drawn, swap byte endianess
+		for (uint16_t lineProgress = 0; lineProgress < h; lineProgress++) {
+			uint32_t *currentData = (uint32_t*)(data + (lineProgress * 320 * 2));	//Get address of first element of current line
+			uint32_t *lastData = currentData + w*2;	//Get address of last element of current line (which is the address of the starting element currentData plus the width of the line
+
+			// swap data byte endianess of the current framebuffer line for ILI9341 display
+			for (uint32_t *data32=currentData; data32<lastData; data32++) {
+				*data32=__REV16(*data32);
+			}
+		}
+		*/
+
+		currentLine = 0;	// Reset line progress global variable
+		framebufferLocation = data;		// Save framebuffer starting location globally for later
+		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, w*2);	// Transmit the data
 	}
+
 	isTransmitting = true;
 }
 

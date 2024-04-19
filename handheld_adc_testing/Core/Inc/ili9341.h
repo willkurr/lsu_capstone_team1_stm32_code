@@ -52,6 +52,9 @@ extern uint8_t *framebufferLocation;	//holds the location of the framebuffer in 
 extern uint32_t bytesLeft;				//holds the number of bytes left to be written in case ILI9341_DrawBitmap() can't draw entire buffer at once
 extern bool framebufferTooBig;
 extern bool isTransmitting;
+extern uint16_t width;
+extern uint16_t height;
+extern uint16_t currentLine;
 
 #ifdef __cplusplus
 }
