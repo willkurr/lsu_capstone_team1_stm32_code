@@ -198,8 +198,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //Getting rid of this code while debugging SPI DMA
-	  /*
 	  if (!readyToGetADCValue && !newADCValueReady && !adcConvInProgress) {
 		  adcConvInProgress = 1;
 		  startHandheldADC();
@@ -209,8 +207,6 @@ int main(void)
 		  readyToGetADCValue = 0;
 		  newADCValueReady = 1;
 	  }
-	  */
-
     /* USER CODE END WHILE */
 
   MX_TouchGFX_Process();
