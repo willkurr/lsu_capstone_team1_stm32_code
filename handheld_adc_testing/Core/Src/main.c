@@ -98,11 +98,11 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 		// Code for transmitting framebuffer with entire display width
 		if (width == 320) {
 			if (framebufferTooBig) {
-				framebufferLocation += UINT16_MAX;
+				framebufferLocation += UINT16_MAX + 1;	//Must include +1 to align framebuffer pointer with halfword!
 
-				if (bytesLeft > UINT16_MAX) {
-					HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, UINT16_MAX);
-					bytesLeft -= UINT16_MAX;
+				if (bytesLeft > UINT16_MAX/2) {
+					HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, UINT16_MAX/2);
+					bytesLeft -= UINT16_MAX/2;
 					framebufferTooBig = true;
 				}
 				else {
@@ -122,7 +122,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 			currentLine++;
 			if (currentLine != height) {
 				framebufferLocation += 320*2;	//Go to next line of framebuffer that needs to be written
-				HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, width*2);
+				HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, width);
 			}
 			else {
 				isTransmitting = false;
@@ -198,6 +198,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  //Getting rid of this code while debugging SPI DMA
+	  /*
 	  if (!readyToGetADCValue && !newADCValueReady && !adcConvInProgress) {
 		  adcConvInProgress = 1;
 		  startHandheldADC();
@@ -207,6 +209,7 @@ int main(void)
 		  readyToGetADCValue = 0;
 		  newADCValueReady = 1;
 	  }
+	  */
 
     /* USER CODE END WHILE */
 

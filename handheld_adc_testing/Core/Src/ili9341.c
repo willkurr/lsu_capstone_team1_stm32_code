@@ -235,7 +235,9 @@ void ILI9341_DrawBitmap(uint16_t w, uint16_t h, uint8_t *data)
 
 	// Code for transmitting framebuffer with entire width of display
 	if (w == 320) {
-		uint32_t dataSize = w*h*2;		// number of bytes in data buffer
+		//uint32_t dataSize = w*h*2;		// number of bytes in data buffer
+		uint32_t dataSize = w*h; //halfword data size adjustment
+
 		/*
 		uint32_t *lastData = (uint32_t*)(data + dataSize);	//address of last element of data buffer
 
@@ -246,12 +248,13 @@ void ILI9341_DrawBitmap(uint16_t w, uint16_t h, uint8_t *data)
 		*/
 
 		// if there are too many bytes to transmit with a single HAL_SPI_Transmit_DMA()
-		if (w*h*2 > UINT16_MAX) {
+		//if (w*h*2 > UINT16_MAX) {
+		if (w*h > UINT16_MAX/2) {		//halfword data size adjustment, DMA cannot transmit more than UINT16_MAX/2 halfwords at once
 			//save the framebuffer location to global variable, transmit the first portion of the framebuffer, and calculate remaining bytes left
 			framebufferLocation = data;
 
-			HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, UINT16_MAX);
-			bytesLeft = dataSize - UINT16_MAX;
+			HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, UINT16_MAX/2);	//Size is equal to number of halfwords transmitted, but cannot exceed more than UINT16_MAX bytes!!! Thus max halfwords is UINT16_MAX/2
+			bytesLeft = dataSize - UINT16_MAX/2;
 			framebufferTooBig = true;
 		}
 		else {
@@ -275,7 +278,7 @@ void ILI9341_DrawBitmap(uint16_t w, uint16_t h, uint8_t *data)
 
 		currentLine = 0;	// Reset line progress global variable
 		framebufferLocation = data;		// Save framebuffer starting location globally for later
-		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, w*2);	// Transmit the data
+		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, w);	// Transmit the data
 	}
 
 	isTransmitting = true;
