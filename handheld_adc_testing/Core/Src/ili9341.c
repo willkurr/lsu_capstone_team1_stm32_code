@@ -235,20 +235,9 @@ void ILI9341_DrawBitmap(uint16_t w, uint16_t h, uint8_t *data)
 
 	// Code for transmitting framebuffer with entire width of display
 	if (w == 320) {
-		//uint32_t dataSize = w*h*2;		// number of bytes in data buffer
 		uint32_t dataSize = w*h; //halfword data size adjustment
 
-		/*
-		uint32_t *lastData = (uint32_t*)(data + dataSize);	//address of last element of data buffer
-
-		// swap data byte endianess for ILI9341 display
-		for (uint32_t *data32=(uint32_t*)data; data32<lastData; data32++) {
-			*data32=__REV16(*data32);
-		}
-		*/
-
 		// if there are too many bytes to transmit with a single HAL_SPI_Transmit_DMA()
-		//if (w*h*2 > UINT16_MAX) {
 		if (w*h > UINT16_MAX/2) {		//halfword data size adjustment, DMA cannot transmit more than UINT16_MAX/2 halfwords at once
 			//save the framebuffer location to global variable, transmit the first portion of the framebuffer, and calculate remaining bytes left
 			framebufferLocation = data;
@@ -263,19 +252,6 @@ void ILI9341_DrawBitmap(uint16_t w, uint16_t h, uint8_t *data)
 	}
 	// Code for transmitting rectangular portion of framebuffer (portion to transmit is not entire width of display)
 	else {
-		/*
-		// for each line in the rectangular portion of the display that is being drawn, swap byte endianess
-		for (uint16_t lineProgress = 0; lineProgress < h; lineProgress++) {
-			uint32_t *currentData = (uint32_t*)(data + (lineProgress * 320 * 2));	//Get address of first element of current line
-			uint32_t *lastData = currentData + w*2;	//Get address of last element of current line (which is the address of the starting element currentData plus the width of the line
-
-			// swap data byte endianess of the current framebuffer line for ILI9341 display
-			for (uint32_t *data32=currentData; data32<lastData; data32++) {
-				*data32=__REV16(*data32);
-			}
-		}
-		*/
-
 		currentLine = 0;	// Reset line progress global variable
 		framebufferLocation = data;		// Save framebuffer starting location globally for later
 		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)data, w);	// Transmit the data
