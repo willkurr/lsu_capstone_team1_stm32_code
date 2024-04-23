@@ -19,5 +19,4 @@ void MainView::updateADCValue(uint16_t newValue) {
 	Unicode::snprintf(adcrawvalue_textBuffer,ADCRAWVALUE_TEXT_SIZE,"%d",newValue);
 	adcrawvalue_text.invalidate();
 	adcrawvalue_text.resizeToCurrentText();
-	adcrawvalue_text.invalidate();
 }

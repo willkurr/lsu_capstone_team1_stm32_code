@@ -48,7 +48,7 @@
             "Wildcard1": {
               "TextId": "adc_raw_value_wildcard",
               "UseBuffer": true,
-              "BufferSize": 5
+              "BufferSize": 6
             }
           },
           {

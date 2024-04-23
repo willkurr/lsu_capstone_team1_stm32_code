@@ -84,9 +84,6 @@ static void MX_TIM6_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// globals only visible to main.c
-uint8_t adcConvInProgress = 0;
-uint8_t readyToGetADCValue = 0;
 
 // globals from methane_detetor.h
 uint16_t adcValue = 0;
@@ -130,13 +127,6 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 				HAL_SPI_Init(&hspi1);
 			}
 		}
-	}
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-	if (hadc == &hadc1) {
-		readyToGetADCValue = 1;
-		adcConvInProgress = 0;
 	}
 }
 
@@ -192,20 +182,26 @@ int main(void)
 
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_4);		// Enable complementary PWM on channel 4 of timer 8 (backlight brightness control)
   HAL_TIM_Base_Start_IT(&htim6);					// Start TIM6 to generate an interrupt every 1 second for calling TouchGFX vsync function. See stm32u5xx_it.c for call to vsync function
+
+  uint8_t avgInProgress = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (!readyToGetADCValue && !newADCValueReady && !adcConvInProgress) {
-		  adcConvInProgress = 1;
-		  startHandheldADC();
-	  }
-	  else if (readyToGetADCValue) {
-		  adcValue = getHandheldADCValue();
-		  readyToGetADCValue = 0;
-		  newADCValueReady = 1;
+	  if (!newADCValueReady) {
+		  if (!avgInProgress) {
+			  startNPointAverageADCRead(64);
+			  avgInProgress = 1;
+		  }
+		  else {
+			  if (pollForNPointAverageADCRead()) {
+				  avgInProgress = 0;
+				  adcValue = getNPointAverageADCValue();
+				  newADCValueReady = 1;
+			  }
+		  }
 	  }
     /* USER CODE END WHILE */
 

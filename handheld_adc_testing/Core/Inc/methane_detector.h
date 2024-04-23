@@ -13,6 +13,7 @@
 #define INC_METHANE_DETECTOR_H_
 
 #include "main.h"
+#include <stdbool.h>
 
 //Global variables that need to be passed to TouchGFX
 // START GLOBAL EXTERN DEFINITIONS
@@ -20,19 +21,24 @@
 extern "C" {
 #endif
 
-extern uint16_t adcValue;
+extern uint16_t adcValue;					//These two globals are used by TouchGFX in TouchGFX/gui/src/model/model.cpp
 extern volatile uint8_t newADCValueReady;
+
+extern volatile uint8_t adcConvInProgress;
+extern volatile uint8_t readyToGetADCValue;
 
 #ifdef __cplusplus
 }
 #endif
 // END GLOBAL EXTERN DEFINITIONS
 
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 void startHandheldADC();
 uint16_t getHandheldADCValue();
+void startNPointAverageADCRead(uint16_t n);
+bool pollForNPointAverageADCRead();
+uint16_t getNPointAverageADCValue();
 
-//Callback implementations
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 
 
 #endif /* INC_METHANE_DETECTOR_H_ */

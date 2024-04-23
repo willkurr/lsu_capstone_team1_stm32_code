@@ -36,7 +36,7 @@ protected:
     /*
      * Wildcard Buffers
      */
-    static const uint16_t ADCRAWVALUE_TEXT_SIZE = 5;
+    static const uint16_t ADCRAWVALUE_TEXT_SIZE = 6;
     touchgfx::Unicode::UnicodeChar adcrawvalue_textBuffer[ADCRAWVALUE_TEXT_SIZE];
 
 private:
