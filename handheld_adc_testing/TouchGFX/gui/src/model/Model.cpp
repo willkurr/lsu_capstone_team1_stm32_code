@@ -12,7 +12,7 @@ void Model::tick()
 	if (newADCValueReady) {
 		// If there is a modelListener active, notify the view that its ready
 		if (modelListener != 0) {
-			modelListener->notifyMethaneADCValueChanged(adcValue);
+			modelListener->notifyMethaneADCValueChanged(adcValue,convertedVoltage,methaneLevel);
 		}
 
 		// Set this back to 0 so main() knows to read another ADC value

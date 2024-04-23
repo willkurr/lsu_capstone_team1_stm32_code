@@ -29,7 +29,7 @@ public:
     }
 
     //Overrided in MainPresenter.hpp
-    virtual void notifyMethaneADCValueChanged(uint16_t newValue) {}
+    virtual void notifyMethaneADCValueChanged(uint16_t newADCValue, double newVoltage, uint16_t newMethaneLevel) {}
 
 protected:
     Model* model;

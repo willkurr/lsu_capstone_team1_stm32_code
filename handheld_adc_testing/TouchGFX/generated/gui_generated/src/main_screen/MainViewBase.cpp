@@ -22,23 +22,47 @@ MainViewBase::MainViewBase()
     adctesting_text.setTypedText(touchgfx::TypedText(T___SINGLEUSE_XW9I));
     add(adctesting_text);
 
-    adcrawvalue_text.setXY(10, 103);
-    adcrawvalue_text.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-    adcrawvalue_text.setLinespacing(0);
-    Unicode::snprintf(adcrawvalue_textBuffer, ADCRAWVALUE_TEXT_SIZE, "%s", touchgfx::TypedText(T_ADC_RAW_VALUE_WILDCARD).getText());
-    adcrawvalue_text.setWildcard(adcrawvalue_textBuffer);
-    adcrawvalue_text.resizeToCurrentText();
-    adcrawvalue_text.setTypedText(touchgfx::TypedText(T___SINGLEUSE_7C6U));
-    add(adcrawvalue_text);
+    adcRawValueText.setXY(10, 176);
+    adcRawValueText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    adcRawValueText.setLinespacing(0);
+    Unicode::snprintf(adcRawValueTextBuffer, ADCRAWVALUETEXT_SIZE, "%s", touchgfx::TypedText(T_ADC_RAW_VALUE_WILDCARD).getText());
+    adcRawValueText.setWildcard(adcRawValueTextBuffer);
+    adcRawValueText.resizeToCurrentText();
+    adcRawValueText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_7C6U));
+    add(adcRawValueText);
 
-    boxProgress1.setXY(10, 211);
+    boxProgress1.setXY(10, 217);
     boxProgress1.setProgressIndicatorPosition(0, 0, 300, 10);
-    boxProgress1.setRange(0, 100);
+    boxProgress1.setRange(0, 10000);
     boxProgress1.setDirection(touchgfx::AbstractDirectionProgress::RIGHT);
     boxProgress1.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BOXPROGRESS_NORMAL_MEDIUM_ID));
     boxProgress1.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-    boxProgress1.setValue(60);
+    boxProgress1.setValue(0);
     add(boxProgress1);
+
+    voltageValueText.setXY(45, 142);
+    voltageValueText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    voltageValueText.setLinespacing(0);
+    Unicode::snprintf(voltageValueTextBuffer, VOLTAGEVALUETEXT_SIZE, "%s", touchgfx::TypedText(T_VOLTAGE).getText());
+    voltageValueText.setWildcard(voltageValueTextBuffer);
+    voltageValueText.resizeToCurrentText();
+    voltageValueText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_QGEI));
+    add(voltageValueText);
+
+    methaneLevelText.setXY(72, 34);
+    methaneLevelText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    methaneLevelText.setLinespacing(0);
+    Unicode::snprintf(methaneLevelTextBuffer, METHANELEVELTEXT_SIZE, "%s", touchgfx::TypedText(T_METHANELEVEL).getText());
+    methaneLevelText.setWildcard(methaneLevelTextBuffer);
+    methaneLevelText.resizeToCurrentText();
+    methaneLevelText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_UW5T));
+    add(methaneLevelText);
+
+    ppmText.setXY(131, 97);
+    ppmText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    ppmText.setLinespacing(0);
+    ppmText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_3S6Y));
+    add(ppmText);
 }
 
 MainViewBase::~MainViewBase()

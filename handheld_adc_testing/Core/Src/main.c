@@ -87,6 +87,8 @@ static void MX_TIM6_Init(void);
 
 // globals from methane_detetor.h
 uint16_t adcValue = 0;
+double convertedVoltage = 0;
+uint16_t methaneLevel = 0;
 volatile uint8_t newADCValueReady = 0;
 
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
@@ -184,6 +186,13 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim6);					// Start TIM6 to generate an interrupt every 1 second for calling TouchGFX vsync function. See stm32u5xx_it.c for call to vsync function
 
   uint8_t avgInProgress = 0;
+
+  // Let TouchGFX start running before processing anything
+  uint8_t preRunCount = 0;
+  while(preRunCount < 10) {
+	  MX_TouchGFX_Process();
+	  preRunCount++;
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -192,13 +201,16 @@ int main(void)
   {
 	  if (!newADCValueReady) {
 		  if (!avgInProgress) {
-			  startNPointAverageADCRead(64);
+			  startNPointAverageADCRead(128);
 			  avgInProgress = 1;
 		  }
 		  else {
 			  if (pollForNPointAverageADCRead()) {
 				  avgInProgress = 0;
 				  adcValue = getNPointAverageADCValue();
+				  convertedVoltage = 3.3 * ((double)adcValue / 16383.0);
+				  methaneLevel = convertADCToMethane(adcValue);
+
 				  newADCValueReady = 1;
 			  }
 		  }

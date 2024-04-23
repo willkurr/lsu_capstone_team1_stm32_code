@@ -21,8 +21,13 @@
 extern "C" {
 #endif
 
-extern uint16_t adcValue;					//These two globals are used by TouchGFX in TouchGFX/gui/src/model/model.cpp
+//Start touchgfx globals
+//These globals are used by TouchGFX in TouchGFX/gui/src/model/model.cpp!!!
+extern uint16_t adcValue;
+extern double convertedVoltage;
+extern uint16_t methaneLevel;
 extern volatile uint8_t newADCValueReady;
+//End touchgfx globals
 
 extern volatile uint8_t adcConvInProgress;
 extern volatile uint8_t readyToGetADCValue;
@@ -38,6 +43,7 @@ uint16_t getHandheldADCValue();
 void startNPointAverageADCRead(uint16_t n);
 bool pollForNPointAverageADCRead();
 uint16_t getNPointAverageADCValue();
+uint16_t convertADCToMethane(uint16_t adcReading);
 
 
 

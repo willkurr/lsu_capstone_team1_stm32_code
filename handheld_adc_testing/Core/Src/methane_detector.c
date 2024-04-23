@@ -8,6 +8,7 @@
 #include "methane_detector.h"
 #include "main.h"
 #include <stdbool.h>
+#include <math.h>
 
 extern ADC_HandleTypeDef hadc1;
 extern void Error_Handler(void);
@@ -87,4 +88,23 @@ bool pollForNPointAverageADCRead() {
  */
 uint16_t getNPointAverageADCValue() {
 	return adcSum / numSamples;
+}
+
+
+/**
+ * Converts a 14-bit ADC sensor reading to a methane level in ppm.
+ * @param adcReading the 14-bit ADC reading from a Figaro 2611 sensor
+ * @returns the methane level in an integer number of ppm
+ */
+uint16_t convertADCToMethane(uint16_t adcReading) {
+	// Convert ADC reading to floating point voltage
+	double VDD = 3.3;	 // voltage divider supply voltage (volts)
+	double adcVoltage = VDD * ((double)adcReading / 16383.0);	// 16383 = 2^14 - 1
+
+	double RL = 10000;	 // voltage divider circuit load resistance (ohms)
+	double Ro = 1637.18; // sensor resistance in 5,000 ppm methane (ohms)
+
+
+	double methaneLevelPPM = 1.0/(pow((adcVoltage*RL)/(40.28*Ro*(VDD-adcVoltage)),2.33208955));
+	return (uint16_t)round(methaneLevelPPM);
 }

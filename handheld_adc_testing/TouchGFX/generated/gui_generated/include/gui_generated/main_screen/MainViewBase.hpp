@@ -30,14 +30,21 @@ protected:
     touchgfx::Box __background;
     touchgfx::Box box1;
     touchgfx::TextArea adctesting_text;
-    touchgfx::TextAreaWithOneWildcard adcrawvalue_text;
+    touchgfx::TextAreaWithOneWildcard adcRawValueText;
     touchgfx::BoxProgress boxProgress1;
+    touchgfx::TextAreaWithOneWildcard voltageValueText;
+    touchgfx::TextAreaWithOneWildcard methaneLevelText;
+    touchgfx::TextArea ppmText;
 
     /*
      * Wildcard Buffers
      */
-    static const uint16_t ADCRAWVALUE_TEXT_SIZE = 6;
-    touchgfx::Unicode::UnicodeChar adcrawvalue_textBuffer[ADCRAWVALUE_TEXT_SIZE];
+    static const uint16_t ADCRAWVALUETEXT_SIZE = 6;
+    touchgfx::Unicode::UnicodeChar adcRawValueTextBuffer[ADCRAWVALUETEXT_SIZE];
+    static const uint16_t VOLTAGEVALUETEXT_SIZE = 7;
+    touchgfx::Unicode::UnicodeChar voltageValueTextBuffer[VOLTAGEVALUETEXT_SIZE];
+    static const uint16_t METHANELEVELTEXT_SIZE = 8;
+    touchgfx::Unicode::UnicodeChar methaneLevelTextBuffer[METHANELEVELTEXT_SIZE];
 
 private:
 

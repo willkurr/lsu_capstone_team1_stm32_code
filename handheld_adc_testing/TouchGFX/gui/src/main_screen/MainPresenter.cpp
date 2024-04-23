@@ -14,6 +14,6 @@ void MainPresenter::deactivate()
 {
 }
 
-void MainPresenter::notifyMethaneADCValueChanged(uint16_t newValue) {
-	view.updateADCValue(newValue);
+void MainPresenter::notifyMethaneADCValueChanged(uint16_t newADCValue, double newVoltage, uint16_t newMethaneLevel) {
+	view.updateADCValue(newADCValue, newVoltage, newMethaneLevel);
 }

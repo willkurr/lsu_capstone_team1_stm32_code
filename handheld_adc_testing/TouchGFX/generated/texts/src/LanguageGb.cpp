@@ -10,7 +10,12 @@ KEEP extern const uint32_t indicesGb[] TEXT_LOCATION_FLASH_ATTRIBUTE;
 // Remap all strings
 TEXT_LOCATION_FLASH_PRAGMA
 KEEP extern const uint32_t indicesGb[] TEXT_LOCATION_FLASH_ATTRIBUTE = {
-    30, // T_ADC_RAW_VALUE_WILDCARD: "none"
+    46, // T___SINGLEUSE_3S6Y: "ppm"
+    12, // T_METHANELEVEL: ""
+    11, // T___SINGLEUSE_UW5T: "<>"
+    41, // T_VOLTAGE: "none"
+    30, // T___SINGLEUSE_QGEI: "Voltage: <>"
+    41, // T_ADC_RAW_VALUE_WILDCARD: "none"
     0,  // T___SINGLEUSE_7C6U: "Raw Value: <>"
     13  // T___SINGLEUSE_XW9I: "ADC Testing Code"
 };
