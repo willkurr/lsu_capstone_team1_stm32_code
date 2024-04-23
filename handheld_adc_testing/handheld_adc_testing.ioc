@@ -1,12 +1,14 @@
 #MicroXplorer Configuration settings - do not modify
 ADC1.Channel-6\#ChannelRegularConversion=ADC_CHANNEL_1
 ADC1.ClockPrescaler=ADC_CLOCK_ASYNC_DIV4
-ADC1.IPParameters=Rank-6\#ChannelRegularConversion,master,Channel-6\#ChannelRegularConversion,SamplingTime-6\#ChannelRegularConversion,OffsetNumber-6\#ChannelRegularConversion,MonitoredBy-6\#ChannelRegularConversion,NbrOfConversionFlag,ClockPrescaler
+ADC1.EnableAnalogWatchDog1=false
+ADC1.IPParameters=Rank-6\#ChannelRegularConversion,master,Channel-6\#ChannelRegularConversion,SamplingTime-6\#ChannelRegularConversion,OffsetNumber-6\#ChannelRegularConversion,MonitoredBy-6\#ChannelRegularConversion,NbrOfConversionFlag,ClockPrescaler,TriggerFrequencyMode,EnableAnalogWatchDog1
 ADC1.MonitoredBy-6\#ChannelRegularConversion=__NULL
 ADC1.NbrOfConversionFlag=1
 ADC1.OffsetNumber-6\#ChannelRegularConversion=ADC_OFFSET_NONE
 ADC1.Rank-6\#ChannelRegularConversion=1
-ADC1.SamplingTime-6\#ChannelRegularConversion=ADC_SAMPLETIME_5CYCLE
+ADC1.SamplingTime-6\#ChannelRegularConversion=ADC_SAMPLETIME_20CYCLES
+ADC1.TriggerFrequencyMode=ADC_TRIGGER_FREQ_HIGH
 ADC1.master=1
 ADC4.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_2
 ADC4.ClockPrescaler=ADC_CLOCK_ASYNC_DIV4
