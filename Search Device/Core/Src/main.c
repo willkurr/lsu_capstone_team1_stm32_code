@@ -94,6 +94,7 @@ int main(void)
   MX_ADC1_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  HAL_GPIO_WritePin(ENABLE_5V_GPIO_Port, ENABLE_5V_Pin, GPIO_PIN_SET);	//turn on 5V regulator
 
   /* USER CODE END 2 */
 
