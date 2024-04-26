@@ -21,7 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "gps.h"
 #include <string.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -82,6 +84,7 @@ static void MX_TIM6_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
 /* USER CODE END 0 */
 
 /**
@@ -125,21 +128,67 @@ int main(void)
   MX_UART4_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
+  //strings for holding date
+  uint8_t gprmcSentence[100];
+  uint8_t latitudeBuffer[10];
+  uint8_t longitudeBuffer[11];
+  uint8_t dateBuffer[7];
 
-  char *checkFor = "$GPRMC";
-  uint8_t receivedData[128];
+  //various things
+  bool success = false;
+  uint32_t uartStartTime = 0;
+
+  // Write 0's to strings so they are null-terminated
+  memset(gprmcSentence,0,100);
+  memset(latitudeBuffer,0,10);
+  memset(longitudeBuffer,0,11);
+  memset(dateBuffer,0,7);
+
+  // Enable GPS
+  HAL_GPIO_WritePin(GPS_EN_GPIO_Port, GPS_EN_Pin, GPIO_PIN_SET);
+
+  //stuff for holding GPS data
+  bool hasFix;
+  uint8_t hour;
+  uint8_t min;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  memset(receivedData,0,128);
-	  HAL_UART_Receive(&huart4, &receivedData, 67, 2000);
-	  if (strstr(&receivedData,checkFor) != NULL) {
-		  uint8_t foundIt = 1; //We did it reddit.
+
+	  if (!checkIfGprmcFound && !gpsUARTReceiveInProgress) {
+		  uartStartTime = HAL_GetTick();
+		  GPS_Start_UART_Read();
 	  }
-	  HAL_Delay(1);
+	  else if (checkIfGprmcFound) {
+		  checkIfGprmcFound = false;
+		  bool receivedSentence = GPS_Poll_For_GPRMC(gprmcSentence);
+		  if (receivedSentence) {
+			  success = true;
+			  hasFix = GPS_Has_Fix(gprmcSentence);
+			  hour = GPS_Get_Hour(gprmcSentence);
+			  min = GPS_Get_Minute(gprmcSentence);
+			  GPS_Get_Date(gprmcSentence, dateBuffer);
+			  if (hasFix) {
+				  GPS_Get_Latitude(gprmcSentence, latitudeBuffer);
+				  GPS_Get_Longitude(gprmcSentence, longitudeBuffer);
+			  }
+		  }
+		  else {
+			  success = false;
+		  }
+	  }
+	  if (success) {
+		  success = false;
+		  HAL_Delay(1000);
+	  }
+	  if ((HAL_GetTick() - uartStartTime > 5000) && gpsUARTReceiveInProgress) {
+		  gpsUARTReceiveInProgress = false;	// Reset the UART receive if it gets stuck.
+	  }
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -682,7 +731,7 @@ static void MX_UART4_Init(void)
   huart4.Init.WordLength = UART_WORDLENGTH_8B;
   huart4.Init.StopBits = UART_STOPBITS_1;
   huart4.Init.Parity = UART_PARITY_NONE;
-  huart4.Init.Mode = UART_MODE_TX_RX;
+  huart4.Init.Mode = UART_MODE_RX;
   huart4.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart4.Init.OverSampling = UART_OVERSAMPLING_16;
   huart4.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
@@ -767,7 +816,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, PWR_LED_Pin|NRF24_CS_Pin|NRF24_CE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, BUZZER_Pin|EN_5V_Pin|SD_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPS_EN_Pin|BUZZER_Pin|EN_5V_Pin|SD_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LCD_CS_Pin|LCD_DC_Pin|LCD_RST_Pin, GPIO_PIN_RESET);
@@ -779,14 +828,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : GPS_EN_Pin */
-  GPIO_InitStruct.Pin = GPS_EN_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPS_EN_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : BUZZER_Pin EN_5V_Pin SD_CS_Pin */
-  GPIO_InitStruct.Pin = BUZZER_Pin|EN_5V_Pin|SD_CS_Pin;
+  /*Configure GPIO pins : GPS_EN_Pin BUZZER_Pin EN_5V_Pin SD_CS_Pin */
+  GPIO_InitStruct.Pin = GPS_EN_Pin|BUZZER_Pin|EN_5V_Pin|SD_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
