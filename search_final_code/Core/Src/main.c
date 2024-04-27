@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <string.h>
 #include "wireless.h"
 /* USER CODE END Includes */
 
@@ -95,15 +96,59 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
-  Wireless_TotalRegisterReset();
-  Wireless_PowerOn();
+  HAL_GPIO_WritePin(ENABLE_5V_GPIO_Port, ENABLE_5V_Pin, GPIO_PIN_SET);	//turn on methane sensor heater and sensing op-amp
 
+  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
+  HAL_Delay(5000);
+  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET);
+  //Wireless_TotalRegisterReset();
+
+  /*
+  Wireless_PowerOn();
+  //No more wireless config needed since the default pipe and address works fine for our purposes.
+  Wireless_SetRxPayloadWidth(1);	//set receive payload width to one byte
+  Wireless_ReceiveMode();			//enable receive
+
+  uint8_t rxPayload[32];
+  memset(rxPayload, 0, 32);
+
+
+  uint8_t registerVal; //debugging stuff
+  */
+  Wireless_EnableContinuousWave();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  /*
+	  registerVal = Wireless_ReadRegister(0x00);	//check config register
+	  registerVal = Wireless_ReadRegister(0x01);	//check enable auto ack
+	  registerVal = Wireless_ReadRegister(0x02);	//check enabled RX addresses
+	  registerVal = Wireless_ReadRegister(0x05);	//check RF_CH register
+	  registerVal = Wireless_ReadRegister(0x06);	//check RF_SETUP register
+	  registerVal = Wireless_ReadRegister(0x08);	//check OBSERVE_TX register
+	  registerVal = Wireless_ReadRegister(0x09);	//check RPD power detector register
+	  registerVal = Wireless_ReadRegister(0x11);	//check RX payload width P0 address
+	  registerVal = Wireless_ReadRegister(0x17);	//check FIFO_STATUS register
+
+	  //if data has been received
+	  if (Wireless_Check_RXDR()) {
+		  // Read the payload
+		  Wireless_ReadRXPayload(rxPayload);
+		  // If we received the 0x01 payload then success!
+		  if (rxPayload[0] == 0x01) {
+			  // Blink the LED.
+			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
+			  HAL_Delay(100);
+			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET);
+		  }
+		  Wireless_Clear_RXDR();		//Disable RX data reecieved interrupt
+		  Wireless_ReceiveMode();	//Go back to receiving.
+	  }
+	  HAL_Delay(10);
+	  */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

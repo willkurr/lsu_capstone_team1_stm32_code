@@ -540,18 +540,18 @@ void Wireless_UpdateRxAddress(uint8_t *rxUID, uint8_t dataPipe) {
  * end of Caleb's edits;
  */
 
-static void CS_High() {
+void CS_High() {
 	HAL_GPIO_WritePin(NRF24_CS_GPIO_Port, NRF24_CS_Pin, GPIO_PIN_SET);
 }
 
-static void CS_Low() {
+void CS_Low() {
 	HAL_GPIO_WritePin(NRF24_CS_GPIO_Port, NRF24_CS_Pin, GPIO_PIN_RESET);
 }
 
-static void CE_High() {
+void CE_High() {
 	HAL_GPIO_WritePin(NRF24_CE_GPIO_Port, NRF24_CE_Pin, GPIO_PIN_SET);
 }
 
-static void CE_Low() {
+void CE_Low() {
 	HAL_GPIO_WritePin(NRF24_CE_GPIO_Port, NRF24_CE_Pin, GPIO_PIN_RESET);
 }

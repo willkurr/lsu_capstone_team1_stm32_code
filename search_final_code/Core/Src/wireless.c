@@ -316,7 +316,14 @@ bool Wireless_Check_MAXRT() {
 	}
 }
 
-
+/**
+ * Clears the maximum retry flag by writing 1 to it. Must be done to enable further communications if MAXRT is ever set.
+ */
+void Wireless_Clear_MAXRT() {
+	uint8_t statusReg = Wireless_ReadRegister(0x07);
+	bitset(statusReg, 4);
+	Wireless_WriteRegister(0x07, statusReg);
+}
 
 bool Wireless_Check_TXDS() {
 	uint8_t statusReg = Wireless_ReadRegister (0x07);		//read STATUS register
@@ -344,17 +351,29 @@ bool Wireless_Check_TXFIFO_Full() {
 	}
 }
 
-
+/**
+ * Checks to see if data has been received by the NRF24.
+ * @return true if data received, false otherwise
+ */
 bool Wireless_Check_RXDR() {
-	uint8_t statusReg = Wireless_ReadRegister (0x07);
-	uint8_t rxDR = statusReg & 0x80;
+	uint8_t statusReg = Wireless_ReadRegister(0x07);
+	uint8_t rxDR = statusReg & 0b01000000;
 
-	if (rxDR == 0x80) {
+	if (rxDR) {
 		return true;
 	}
 	else {
 		return false;
 	}
+}
+
+/**
+ * Clears the RXDR (data ready RX FIFOF interupt) bit. Call this after Wireless_Check_RXDR() is true and data has been read from the FIFO.
+ */
+void Wireless_Clear_RXDR() {
+	uint8_t statusReg = Wireless_ReadRegister(0x07);
+	bitset(statusReg,6);
+	Wireless_WriteRegister(0x07,statusReg);
 }
 
 
@@ -367,23 +386,35 @@ void Wireless_WriteTXPayload(uint8_t *payload, int pldSize) {
 }
 
 
-
+/**
+ * Reads the received payload on top of the RX FIFO. Should be called after Wireless_Check_RXDR returns true.
+ * @param rxPayload Pointer to the buffer where the received data will be stored. Should be at least 32 bits wide to hold the max length payload.
+ */
 void Wireless_ReadRXPayload(uint8_t *rxPayload) {
+	CE_Low();	// End receiving so data can be clocked out
+
 	uint8_t readRXPldWdComm = 0x60;
 	uint8_t readRXPldComm = 0x61;
 	uint8_t rxPldWidth;
 
+	// Get the width of the received payload on the top of the RX FIFO
 	Wireless_WriteValue(readRXPldWdComm);
 	CS_Low();
 	HAL_SPI_Receive(&hspi1, &rxPldWidth, 1, 100);
 	CS_High();
 
+	// Read the received payload on the top of the RX FIFO
 	Wireless_WriteValue(readRXPldComm);
+	CS_Low();
+	HAL_SPI_Receive(&hspi1, rxPayload, rxPldWidth, 100);
+	CS_High();
+	/*
 	for (uint8_t i = 0; i < rxPldWidth; i++) {
 		CS_Low();
 		HAL_SPI_Receive(&hspi1, &rxPayload[i], 1, 100);
 		CS_High();
 	}
+	*/
 }
 
 
@@ -413,15 +444,28 @@ void Wireless_TransmitPld(uint8_t *payload) {
 	CE_High();												//set CE high to enter transmit mode and begin transmission
 }
 
+/**
+ * Sets the value of the receive payload width. Must match what is transmitted.
+ * This sets the value of the RX_PW_P0 register (pipe 0 receive rx payload width), so if you need to set another pipe, this function won't do it.
+ * @param width The width in bytes of the payload to receive. Must be between 1 and 32. Set to 0 to disable receiving on this pipe.
+ */
+void Wireless_SetRxPayloadWidth(uint8_t width) {
+	width &= 0b00111111; //ensure that bit 7 and 6 are set to 0 since they are reserved
+	Wireless_WriteRegister(0x11, width);
+}
 
+/**
+ * Enables receive mode on the NRF24 by setting CE low, flushing the RX fifo, setting PRIM_RX to 1, and setting CE high.
+ * One should call Wireless_SetRxPayloadWidth first to make sure the recieve payload size matches what is transmitted.
+ */
 void Wireless_ReceiveMode() {
 	CE_Low();
-	Wireless_WriteValue(0xE1);								//flush RX FIFO
+	Wireless_WriteValue(0xE2);								//flush RX FIFO
 															//enter RX mode
-	uint8_t configReg = Wireless_ReadRegister(0x0);			//set PRIM_RX to 1
-	bitset(configReg, 1);
+	uint8_t configReg = Wireless_ReadRegister(0x0);
+	bitset(configReg, 0);									//set PRIM_RX to 1
 	Wireless_WriteRegister(0x0, configReg);
-	CE_High();												//set CE to 1
+	CE_High();												//set CE to 1 to begin receive after 130 us setup time
 }
 
 
@@ -530,18 +574,18 @@ void Wireless_UpdateRxAddress(uint8_t *rxUID, uint8_t dataPipe) {
  * end of Caleb's edits;
  */
 
-static void CS_High() {
+void CS_High() {
 	HAL_GPIO_WritePin(NRF24_CS_GPIO_Port, NRF24_CS_Pin, GPIO_PIN_SET);
 }
 
-static void CS_Low() {
+void CS_Low() {
 	HAL_GPIO_WritePin(NRF24_CS_GPIO_Port, NRF24_CS_Pin, GPIO_PIN_RESET);
 }
 
-static void CE_High() {
+void CE_High() {
 	HAL_GPIO_WritePin(NRF24_CE_GPIO_Port, NRF24_CE_Pin, GPIO_PIN_SET);
 }
 
-static void CE_Low() {
+void CE_Low() {
 	HAL_GPIO_WritePin(NRF24_CE_GPIO_Port, NRF24_CE_Pin, GPIO_PIN_RESET);
 }

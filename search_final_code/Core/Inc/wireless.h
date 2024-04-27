@@ -49,13 +49,16 @@ void Wireless_DYNPD_RegReset();
 void Wireless_FEATURE_RegReset();
 void Wireless_TotalRegisterReset();
 bool Wireless_Check_MAXRT();
+void Wireless_Clear_MAXRT();
 bool Wireless_Check_TXDS();
 bool Wireless_Check_TXFIFO_Full();
 bool Wireless_Check_RXDR();
+void Wireless_Clear_RXDR();
 void Wireless_WriteTXPayload(uint8_t payload[], int pldSize);
 void Wireless_ReadRXPayload(uint8_t *rxPayload);
 void Wireless_Write_RetrDelandCt(uint8_t retrDel, uint8_t retrCt);
 void Wireless_TransmitPld(uint8_t payload[]);
+void Wireless_SetRxPayloadWidth(uint8_t width);
 void Wireless_ReceiveMode();
 void Wireless_StartTxHandshake();
 void Wireless_RxHandshake();
@@ -64,10 +67,10 @@ void Wireless_UpdateRxAddress(uint8_t rxUID[], uint8_t dataPipe);
  * end of Caleb's edits;
  */
 
-static void CS_High();
-static void CS_Low();
-static void CE_High();
-static void CE_Low();
+void CS_High();
+void CS_Low();
+void CE_High();
+void CE_Low();
 
 
 #endif /* INC_WIRELESS_H_ */

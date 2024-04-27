@@ -133,6 +133,9 @@ int main(void)
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
 
+  //debugging thing
+  uint8_t registerVal;
+
   HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET); //set LED pin high to show that program is working
   HAL_GPIO_WritePin(EN_5V_GPIO_Port, EN_5V_Pin, GPIO_PIN_SET);
 
@@ -142,14 +145,18 @@ int main(void)
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_4);		// Enable complementary PWM on channel 4 of timer 8 (backlight brightness control)
   HAL_TIM_Base_Start_IT(&htim6);					// Start TIM6 to generate an interrupt every 1 second for calling TouchGFX vsync function. See stm32u5xx_it.c for call to vsync function
 
-  Wireless_TotalRegisterReset();
+  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET); //pwr led off to indicate program is starting
+  HAL_Delay(3000);
+  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
+  //Wireless_TotalRegisterReset();
   Wireless_PowerOn();	// Power up the NRF24L01+ IC, and use the default TX and RX0 pipe address of 0xE7E7E7E7E7
   Wireless_Write_RetrDelandCt(0b0000, 0b1111);	//set minimum retry delay (250us) and maximum retry count (15 retries)
   uint8_t payload = 0x01;
-  Wireless_Flush_TXPayload();
-  Wireless_Check_MAXRT();
-  Wireless_ReadRegister(0x01);	//Check EN autoack register
-  Wireless_ReadRegister(0x17);	//Check FIFO STATUS register
+  registerVal = Wireless_ReadRegister(0x00);	//check config register
+  registerVal = Wireless_ReadRegister(0x01);	//Check EN autoack register
+  registerVal = Wireless_ReadRegister(0x05);	//Check RF CH register
+  registerVal = Wireless_ReadRegister(0x06);    //check RF_SETUP register
+  registerVal = Wireless_ReadRegister(0x17);	//Check FIFO STATUS register
   Wireless_TransmitPld(&payload, 1);
 
   uint8_t touchgfxPrerun = 0;
@@ -166,15 +173,23 @@ int main(void)
   while (1)
   {
 	  // if 500ms has passed since the last transmission
-	  if (HAL_GetTick() - lastTransmissionTime > 500) {
+	  if ((HAL_GetTick() - lastTransmissionTime) > 1000) {
 		  //check to see if max retries were reached
 		  Wireless_ReadRegister(0x08);	//Check OBSERVE_TX register
 		  if (Wireless_Check_MAXRT()) {
+			  if (!HAL_GPIO_ReadPin(NRF24_IRQ_GPIO_Port, NRF24_IRQ_Pin)) {
+				  uint8_t yepThereShouldBeAnInterrupt = 1;
+			  }
+
+
 			  //if so, pulse the LED to indicate TX failure
 			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET);
 			  HAL_Delay(100);
 			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
 			  Wireless_Clear_MAXRT();
+			  if (!HAL_GPIO_ReadPin(NRF24_IRQ_GPIO_Port, NRF24_IRQ_Pin)) {
+				  uint8_t nopeThereShouldntBeAnInterrupt = 0;
+			  }
 		  }
 		  //transmit payload again and restart timer
 		  Wireless_TransmitPld(&payload, 1);

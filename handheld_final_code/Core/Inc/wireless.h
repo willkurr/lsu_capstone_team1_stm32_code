@@ -65,10 +65,10 @@ void Wireless_UpdateRxAddress(uint8_t rxUID[], uint8_t dataPipe);
  * end of Caleb's edits;
  */
 
-static void CS_High();
-static void CS_Low();
-static void CE_High();
-static void CE_Low();
+void CS_High();
+void CS_Low();
+void CE_High();
+void CE_Low();
 
 
 #endif /* INC_WIRELESS_H_ */
