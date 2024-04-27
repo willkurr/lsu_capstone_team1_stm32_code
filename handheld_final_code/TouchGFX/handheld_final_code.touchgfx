@@ -1,0 +1,763 @@
+{
+  "Application": {
+    "Screens": [
+      {
+        "Name": "GCTMCSplash",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "box1",
+            "Width": 320,
+            "Height": 240,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textArea1",
+            "X": 83,
+            "Width": 155,
+            "Height": 24,
+            "TextId": "__SingleUse_CBEX",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "Image",
+            "Name": "image1",
+            "X": 61,
+            "Y": 30,
+            "Width": 199,
+            "Height": 202,
+            "RelativeFilename": "GCTMCLogo.png"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "Interaction1",
+            "HasCompletedTrigger": true,
+            "Trigger": {
+              "Type": "TriggerScreenTransitionBegins"
+            },
+            "Action": {
+              "Type": "ActionDelay",
+              "Duration": 3000
+            }
+          },
+          {
+            "InteractionName": "Interaction2",
+            "Trigger": {
+              "Type": "TriggerInteractionCompleted",
+              "InteractionToTriggerOn": "Interaction1"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "WarningSplash"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "WarningSplash",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "box1",
+            "Width": 320,
+            "Height": 240,
+            "Color": {
+              "Red": 255,
+              "Green": 99,
+              "Blue": 99
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textArea2",
+            "X": 35,
+            "Y": 17,
+            "Width": 251,
+            "Height": 51,
+            "TextId": "__SingleUse_HFFV",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textArea3",
+            "X": 7,
+            "Y": 144,
+            "Width": 307,
+            "Height": 119,
+            "TextId": "__SingleUse_XHQZ",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textArea4",
+            "X": 150,
+            "Y": 79,
+            "Width": 20,
+            "Height": 51,
+            "TextId": "__SingleUse_UJ8X",
+            "TextRotation": "0",
+            "AutoSize": true
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "Interaction1",
+            "HasCompletedTrigger": true,
+            "Trigger": {
+              "Type": "TriggerScreenTransitionBegins"
+            },
+            "Action": {
+              "Type": "ActionDelay",
+              "Duration": 5000
+            }
+          },
+          {
+            "InteractionName": "Interaction2",
+            "Trigger": {
+              "Type": "TriggerInteractionCompleted",
+              "InteractionToTriggerOn": "Interaction1"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionWipe",
+              "ScreenTransitionDirection": "South",
+              "ActionComponent": "MainMenu"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "MainMenu",
+        "CanvasBufferSize": 4800,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "mainMenuBackground",
+            "Width": 320,
+            "Height": 240,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "menuStatusBarBackground",
+            "Width": 320,
+            "Height": 26,
+            "Color": {
+              "Green": 102,
+              "Blue": 153
+            }
+          },
+          {
+            "Type": "DigitalClock",
+            "Name": "digitalClock",
+            "X": 245,
+            "Y": 4,
+            "Width": 75,
+            "Height": 19,
+            "TextColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "TextId": "__SingleUse_6BNV",
+            "UseAmPm": true,
+            "InitialHour": 10,
+            "InitialMinute": 10
+          },
+          {
+            "Type": "Circle",
+            "Name": "recordingCircle",
+            "X": 211,
+            "Y": -8,
+            "Width": 45,
+            "Height": 42,
+            "Color": {
+              "Red": 255
+            },
+            "CenterX": 20.0,
+            "CenterY": 20.0,
+            "Radius": 10.0,
+            "EndAngle": 360.0,
+            "CapPrecision": "Butt",
+            "Fadeable": true
+          },
+          {
+            "Type": "Box",
+            "Name": "batteryBox2",
+            "X": 3,
+            "Y": 4,
+            "Width": 41,
+            "Height": 19,
+            "Color": {
+              "Red": 89,
+              "Green": 214,
+              "Blue": 51
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "batteryBox1",
+            "X": 43,
+            "Y": 8,
+            "Width": 7,
+            "Height": 12,
+            "Color": {
+              "Red": 89,
+              "Green": 214,
+              "Blue": 51
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "batteryLevelTextArea",
+            "X": 4,
+            "Y": 4,
+            "Width": 39,
+            "Height": 17,
+            "TextId": "__SingleUse_ITFJ",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {
+              "TextId": "batteryPercentWildcard",
+              "UseBuffer": true,
+              "BufferSize": 4
+            }
+          },
+          {
+            "Type": "Image",
+            "Name": "wifiIconImage",
+            "X": 56,
+            "Y": 3,
+            "Width": 26,
+            "Height": 20,
+            "RelativeFilename": "wifiIcon.png"
+          },
+          {
+            "Type": "Line",
+            "Name": "notConnectedLine",
+            "X": 53,
+            "Width": 32,
+            "Height": 26,
+            "Color": {
+              "Red": 255
+            },
+            "StartX": 5.0,
+            "StartY": 5.0,
+            "EndX": 26.0,
+            "EndY": 20.0,
+            "LineWidth": 5.0,
+            "LineEndingStyle": "Round"
+          },
+          {
+            "Type": "TextArea",
+            "Name": "methaneLevelTextArea",
+            "X": 70,
+            "Y": 41,
+            "Width": 180,
+            "Height": 61,
+            "TextId": "__SingleUse_8Y76",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {
+              "TextId": "methaneLevelWildcard",
+              "UseBuffer": true,
+              "BufferSize": 10
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "methaneUnitTextArea",
+            "X": 139,
+            "Y": 102,
+            "Width": 43,
+            "Height": 24,
+            "TextId": "__SingleUse_5TDF",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {
+              "TextId": "methaneUnitWildcard",
+              "UseBuffer": true,
+              "BufferSize": 6
+            }
+          },
+          {
+            "Type": "Circle",
+            "Name": "faultStatusCircle",
+            "X": 35,
+            "Y": 139,
+            "Width": 43,
+            "Height": 36,
+            "Color": {
+              "Red": 209,
+              "Green": 209,
+              "Blue": 209
+            },
+            "CenterX": 20.0,
+            "CenterY": 20.0,
+            "Radius": 15.0,
+            "EndAngle": 360.0,
+            "CapPrecision": "Butt"
+          },
+          {
+            "Type": "Circle",
+            "Name": "overRangeAlarmStatus",
+            "X": 168,
+            "Y": 139,
+            "Width": 43,
+            "Height": 36,
+            "Color": {
+              "Red": 209,
+              "Green": 209,
+              "Blue": 209
+            },
+            "CenterX": 20.0,
+            "CenterY": 20.0,
+            "Radius": 15.0,
+            "EndAngle": 360.0,
+            "CapPrecision": "Butt"
+          },
+          {
+            "Type": "TextArea",
+            "Name": "faultStatusTextArea",
+            "X": 78,
+            "Y": 145,
+            "Width": 49,
+            "Height": 24,
+            "TextId": "__SingleUse_TEVQ",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "overRangeAlarmTextArea",
+            "X": 211,
+            "Y": 145,
+            "Width": 90,
+            "Height": 24,
+            "TextId": "__SingleUse_CRU9",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "FlexButton",
+            "Name": "muteFlexButton",
+            "Y": 203,
+            "Width": 80,
+            "Height": 37,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "TextButtonStyle",
+                "TextId": "muteButtonText",
+                "TextRotation": "0",
+                "ColorReleased": {
+                  "Red": 255,
+                  "Green": 255,
+                  "Blue": 255
+                },
+                "ColorPressed": {
+                  "Red": 161,
+                  "Green": 161,
+                  "Blue": 161
+                }
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "Width": 80,
+                "Height": 37,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 3,
+                "ColorReleased": {
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ]
+          },
+          {
+            "Type": "FlexButton",
+            "Name": "startLoggingFlexButton",
+            "X": 80,
+            "Y": 203,
+            "Width": 80,
+            "Height": 37,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "TextButtonStyle",
+                "TextId": "loggingButtonText",
+                "TextRotation": "0",
+                "ColorReleased": {
+                  "Red": 255,
+                  "Green": 255,
+                  "Blue": 255
+                },
+                "ColorPressed": {
+                  "Red": 156,
+                  "Green": 156,
+                  "Blue": 156
+                }
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "Width": 80,
+                "Height": 37,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 3,
+                "ColorReleased": {
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ]
+          },
+          {
+            "Type": "FlexButton",
+            "Name": "changeUnitFlexButton",
+            "X": 160,
+            "Y": 203,
+            "Width": 80,
+            "Height": 37,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "TextButtonStyle",
+                "TextId": "changeUnitText",
+                "TextRotation": "0",
+                "ColorReleased": {
+                  "Red": 255,
+                  "Green": 255,
+                  "Blue": 255
+                },
+                "ColorPressed": {
+                  "Red": 133,
+                  "Green": 133,
+                  "Blue": 133
+                }
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "Width": 80,
+                "Height": 37,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 3,
+                "ColorReleased": {
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ]
+          },
+          {
+            "Type": "FlexButton",
+            "Name": "optionsMenuFlexButton",
+            "X": 240,
+            "Y": 203,
+            "Width": 80,
+            "Height": 37,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "TextButtonStyle",
+                "Y": 9,
+                "TextId": "__SingleUse_N6CW",
+                "TextRotation": "0",
+                "ColorReleased": {
+                  "Red": 255,
+                  "Green": 255,
+                  "Blue": 255
+                },
+                "ColorPressed": {
+                  "Red": 173,
+                  "Green": 173,
+                  "Blue": 173
+                }
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "Width": 80,
+                "Height": 37,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 3,
+                "ColorReleased": {
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ]
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "hideRecordingCircAtStart",
+            "Trigger": {
+              "Type": "TriggerScreenTransitionBegins"
+            },
+            "Action": {
+              "Type": "ActionHide",
+              "ActionComponent": "recordingCircle"
+            }
+          },
+          {
+            "InteractionName": "showRecordingCirc",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "startLoggingFlexButton"
+            },
+            "Action": {
+              "Type": "ActionShow",
+              "ActionComponent": "recordingCircle"
+            }
+          },
+          {
+            "InteractionName": "hideRecordingCirc",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "startLoggingFlexButton"
+            },
+            "Action": {
+              "Type": "ActionHide",
+              "ActionComponent": "recordingCircle"
+            }
+          },
+          {
+            "InteractionName": "optionsButtonClicked",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "optionsMenuFlexButton"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Options"
+            }
+          }
+        ],
+        "CustomActions": [
+          {
+            "Name": "action1"
+          }
+        ]
+      },
+      {
+        "Name": "Options",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "optionBackground",
+            "Width": 320,
+            "Height": 240,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            }
+          },
+          {
+            "Type": "FlexButton",
+            "Name": "optionsBackFlexButton",
+            "Width": 62,
+            "Height": 30,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "TextButtonStyle",
+                "Y": 6,
+                "TextId": "__SingleUse_3Z2P",
+                "TextRotation": "0",
+                "ColorReleased": {
+                  "Red": 255,
+                  "Green": 255,
+                  "Blue": 255
+                },
+                "ColorPressed": {
+                  "Red": 166,
+                  "Green": 166,
+                  "Blue": 166
+                }
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "Width": 62,
+                "Height": 30,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 5,
+                "ColorReleased": {
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ]
+          },
+          {
+            "Type": "TextArea",
+            "Name": "optionMenuTitleTextArea",
+            "X": 91,
+            "Y": 3,
+            "Width": 138,
+            "Height": 24,
+            "TextId": "__SingleUse_V6CE",
+            "TextRotation": "0",
+            "AutoSize": true
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "optionsBackButtonClicked",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "optionsBackFlexButton"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "MainMenu"
+            }
+          }
+        ]
+      }
+    ],
+    "CustomContainerDefinitions": [],
+    "Name": "MyApplication",
+    "Resolution": {
+      "Width": 320,
+      "Height": 240
+    },
+    "SelectedColorDepth": 16,
+    "StartupScreenName": "GCTMCSplash",
+    "SelectedStartupLanguage": "GB",
+    "TouchGfxPath": "../Middlewares/ST/touchgfx",
+    "UIPath": ".",
+    "AvailableColorDepths": [
+      16
+    ],
+    "AvailableLCDs": {
+      "16": "LCD16bpp"
+    },
+    "AvailableSections": [
+      "ExtFlashSection",
+      "IntFlashSection"
+    ],
+    "AvailableResolutions": [
+      {
+        "Width": 320,
+        "Height": 240
+      }
+    ],
+    "PhysicalButtons": [],
+    "FrameworkFeatures": {
+      "LCD16bpp": {
+        "Id": "LCD16bpp",
+        "IsEnabled": true
+      }
+    },
+    "GenerateAssetsCommand": "make -f simulator/gcc/Makefile assets -j8",
+    "PostGenerateCommand": "touchgfx update_project --project-file=simulator/msvs/Application.vcxproj",
+    "PostGenerateTargetCommand": "touchgfx update_project",
+    "CompileSimulatorCommand": "make -f simulator/gcc/Makefile -j8",
+    "RunSimulatorCommand": "build\\bin\\simulator.exe",
+    "LandscapeSkinX": 0,
+    "LandscapeSkinY": 0,
+    "PortraitSkinX": 0,
+    "PortraitSkinY": 0,
+    "DisplayOrientation": "Landscape",
+    "Family": "STM32U5",
+    "SubFamily": "STM32U5x5",
+    "Toolchain": "STM32CubeIDE",
+    "Platform": "m33",
+    "ProjectFile": "../handheld_final_code.ioc",
+    "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
+    "OptionalComponents": [],
+    "AdditionalFeatures": []
+  },
+  "Version": "4.23.2"
+}

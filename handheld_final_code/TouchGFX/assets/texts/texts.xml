@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextDatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="texts.xsd" Version="4.23.2">
+  <Languages>
+    <Language Id="GB" />
+  </Languages>
+  <Texts>
+    <TextGroup Id="Group1" />
+    <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_V6CE" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">Options Menu</Translation>
+      </Text>
+      <Text Id="__SingleUse_3Z2P" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">&lt;Back</Translation>
+      </Text>
+      <Text Id="changeUnitText" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Change&#10;Units</Translation>
+      </Text>
+      <Text Id="loggingButtonText" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Start&#10;Logging</Translation>
+      </Text>
+      <Text Id="muteButtonText" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Mute&#10;Alarm</Translation>
+      </Text>
+      <Text Id="__SingleUse_N6CW" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Options</Translation>
+      </Text>
+      <Text Id="__SingleUse_CRU9" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">20% LEL</Translation>
+      </Text>
+      <Text Id="__SingleUse_TEVQ" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">Fault</Translation>
+      </Text>
+      <Text Id="methaneUnitWildcard" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">ppm</Translation>
+      </Text>
+      <Text Id="__SingleUse_5TDF" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="methaneLevelWildcard" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">xxxxx</Translation>
+      </Text>
+      <Text Id="__SingleUse_8Y76" Alignment="Center" TypographyId="Humongous">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="batteryPercentWildcard" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">xxx</Translation>
+      </Text>
+      <Text Id="__SingleUse_ITFJ" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">&lt;value&gt;%</Translation>
+      </Text>
+      <Text Id="Younits" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Units</Translation>
+      </Text>
+      <Text Id="UnitButton1" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Units</Translation>
+      </Text>
+      <Text Id="UnitButton2" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Units</Translation>
+      </Text>
+      <Text Id="GasLevelppm" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">Gas Level ppm</Translation>
+      </Text>
+      <Text Id="__SingleUse_UJ8X" Alignment="Center" TypographyId="Large">
+        <Translation Language="GB">!</Translation>
+      </Text>
+      <Text Id="DataButton" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Data</Translation>
+      </Text>
+      <Text Id="RecordingText" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">Recording...</Translation>
+      </Text>
+      <Text Id="GasPercent" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">&lt;&gt; %</Translation>
+      </Text>
+      <Text Id="__SingleUse_6BNV" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">&lt;&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_XHQZ" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Follow safety procedures and wear&#10;PPE as directed by supervisor!&#10;&#10;Do not operate this unit in concentrations&#10;of methane exceeding 20% LEL!&#10;&#10;</Translation>
+      </Text>
+      <Text Id="__SingleUse_HFFV" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">WARNING</Translation>
+      </Text>
+      <Text Id="TimerText" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Gas Level %LEL</Translation>
+      </Text>
+      <Text Id="__SingleUse_CBEX" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">Pragmatics 634</Translation>
+      </Text>
+    </TextGroup>
+  </Texts>
+  <Typographies>
+    <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Large" Font="verdana.ttf" Size="50" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Small" Font="verdana.ttf" Size="14" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WidgetWildcardCharacters="0123456789 :APM" />
+    <Typography Id="Humongous" Font="verdana.ttf" Size="60" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789" />
+  </Typographies>
+</TextDatabase>

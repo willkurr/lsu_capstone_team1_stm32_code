@@ -61,6 +61,50 @@ uint16_t width = 0;
 uint16_t height = 0;
 uint16_t currentLine = 0;
 
+/**
+ * This callback is run when an SPI transfer to the display is completed. It references externs defined in ili9341.h.
+ */
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
+	// LCD DMA transfer and SPI transmission complete, see if there are more bytes to send and start another DMA transfer if so
+	if (hspi == &hspi1) {
+		// Code for transmitting framebuffer with entire display width
+		if (width == 320) {
+			if (framebufferTooBig) {
+				framebufferLocation += UINT16_MAX + 1;	//Must include +1 to align framebuffer pointer with halfword!
+
+				if (bytesLeft > UINT16_MAX/2) {
+					HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, UINT16_MAX/2);
+					bytesLeft -= UINT16_MAX/2;
+					framebufferTooBig = true;
+				}
+				else {
+					HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, bytesLeft);
+					bytesLeft = 0;
+					framebufferTooBig = false;
+				}
+			}
+			else {
+				isTransmitting = false;
+				hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+				HAL_SPI_Init(&hspi1);
+			}
+		}
+		// Code for transmitting rectangular portion of framebuffer (portion to transmit is not entire width of display)
+		else {
+			currentLine++;
+			if (currentLine != height) {
+				framebufferLocation += 320*2;	//Go to next line of framebuffer that needs to be written
+				HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)framebufferLocation, width);
+			}
+			else {
+				isTransmitting = false;
+				hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+				HAL_SPI_Init(&hspi1);
+			}
+		}
+	}
+}
+
 // Initialization
 void ILI9341_Init(void)
 {

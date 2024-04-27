@@ -22,7 +22,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
+#include <string.h>
+#include "ili9341.h"
+#include "methane_detector.h"
+#include "wireless.h"
+#include "gps.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,12 +133,53 @@ int main(void)
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET); //set LED pin high to show that program is working
+  HAL_GPIO_WritePin(EN_5V_GPIO_Port, EN_5V_Pin, GPIO_PIN_SET);
+
+  ILI9341_Init();		// Run initialization function for LCD display
+  ILI9341_SetDisplayBrightness(&htim8,100);	//set backlight brightness to 100%
+
+  HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_4);		// Enable complementary PWM on channel 4 of timer 8 (backlight brightness control)
+  HAL_TIM_Base_Start_IT(&htim6);					// Start TIM6 to generate an interrupt every 1 second for calling TouchGFX vsync function. See stm32u5xx_it.c for call to vsync function
+
+  Wireless_TotalRegisterReset();
+  Wireless_PowerOn();	// Power up the NRF24L01+ IC, and use the default TX and RX0 pipe address of 0xE7E7E7E7E7
+  Wireless_Write_RetrDelandCt(0b0000, 0b1111);	//set minimum retry delay (250us) and maximum retry count (15 retries)
+  uint8_t payload = 0x01;
+  Wireless_Flush_TXPayload();
+  Wireless_Check_MAXRT();
+  Wireless_ReadRegister(0x01);	//Check EN autoack register
+  Wireless_ReadRegister(0x17);	//Check FIFO STATUS register
+  Wireless_TransmitPld(&payload, 1);
+
+  uint8_t touchgfxPrerun = 0;
+  while (touchgfxPrerun < 100) {
+	  MX_TouchGFX_Process();	// Let TouchGFX get initialized before we start doing heavy lifting
+	  touchgfxPrerun++;
+  }
+
+  uint32_t lastTransmissionTime = HAL_GetTick();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // if 500ms has passed since the last transmission
+	  if (HAL_GetTick() - lastTransmissionTime > 500) {
+		  //check to see if max retries were reached
+		  Wireless_ReadRegister(0x08);	//Check OBSERVE_TX register
+		  if (Wireless_Check_MAXRT()) {
+			  //if so, pulse the LED to indicate TX failure
+			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET);
+			  HAL_Delay(100);
+			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
+			  Wireless_Clear_MAXRT();
+		  }
+		  //transmit payload again and restart timer
+		  Wireless_TransmitPld(&payload, 1);
+		  lastTransmissionTime = HAL_GetTick();
+	  }
     /* USER CODE END WHILE */
 
   MX_TouchGFX_Process();
@@ -454,11 +500,11 @@ static void MX_SPI2_Init(void)
   hspi2.Instance = SPI2;
   hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi2.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

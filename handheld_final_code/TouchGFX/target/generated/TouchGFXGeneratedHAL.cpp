@@ -69,7 +69,7 @@ void TouchGFXGeneratedHAL::endFrame()
     touchgfx::OSWrappers::signalRenderingDone();
 }
 
-inline uint8_t* TouchGFXGeneratedHAL::advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect) const
+uint8_t* TouchGFXGeneratedHAL::advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect) const
 {
     //       Advance vertically                   Advance horizontally
     fbPtr += rect.y * lcd().framebufferStride() + rect.x * 2;

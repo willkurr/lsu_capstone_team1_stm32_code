@@ -46,7 +46,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+extern void signalVSyncWrapper(void);	// Declaring signalVSyncWrapper from ili9341.h
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -236,7 +236,7 @@ void ADC1_IRQHandler(void)
 void TIM6_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_IRQn 0 */
-
+  signalVSyncWrapper();		//Trigger the vsync signal for TouchGFX
   /* USER CODE END TIM6_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_IRQn 1 */
