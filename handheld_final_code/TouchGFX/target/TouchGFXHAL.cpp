@@ -184,9 +184,12 @@ void TouchGFXHAL::endFrame()
  */
 extern "C"
 void signalVSyncWrapper(void) {
-	touchgfx::HAL::getInstance()->vSync();	// increment TouchGFX engine VSync counter
+	// Only allow vsync if the SPI/DMA is not currently transmitting data!
+	if (!isTransmitting) {
+		touchgfx::HAL::getInstance()->vSync();	// increment TouchGFX engine VSync counter
 
-	touchgfx::OSWrappers::signalVSync();	// Signal to engine that vsync has occurred to unblock main loop
+		touchgfx::OSWrappers::signalVSync();	// Signal to engine that vsync has occurred to unblock main loop
+	}
 }
 
 /* USER CODE END TouchGFXHAL.cpp */

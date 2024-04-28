@@ -94,15 +94,15 @@ uint16_t getNPointAverageADCValue() {
 /**
  * Converts a 14-bit ADC sensor reading to a methane level in ppm.
  * @param adcReading the 14-bit ADC reading from a Figaro 2611 sensor
+ * @param Ro the Figaro 2611 sensor's resistance in 5,000 ppm methane in ohms
  * @returns the methane level in an integer number of ppm
  */
-uint16_t convertADCToMethane(uint16_t adcReading) {
+uint16_t convertADCToMethane(uint16_t adcReading, double Ro) {
 	// Convert ADC reading to floating point voltage
 	double VDD = 3.293;	 // voltage divider supply voltage (volts)
 	double adcVoltage = VDD * ((double)adcReading / 16383.0);	// 16383 = 2^14 - 1
 
 	double RL = 10000;	 // voltage divider circuit load resistance (ohms)
-	double Ro = 1455; // sensor resistance in 5,000 ppm methane (ohms)
 
 
 	double methaneLevelPPM = 1.0/(pow((adcVoltage*RL)/(40.28*Ro*(VDD-adcVoltage)),2.33208955));

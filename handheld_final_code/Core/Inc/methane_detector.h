@@ -26,7 +26,7 @@ extern "C" {
 extern uint16_t adcValue;
 extern double convertedVoltage;
 extern uint16_t methaneLevel;
-extern volatile uint8_t newADCValueReady;
+extern volatile uint8_t newMethaneLevelReady;
 //End touchgfx globals
 
 extern volatile uint8_t adcConvInProgress;
@@ -43,7 +43,7 @@ uint16_t getHandheldADCValue();
 void startNPointAverageADCRead(uint16_t n);
 bool pollForNPointAverageADCRead();
 uint16_t getNPointAverageADCValue();
-uint16_t convertADCToMethane(uint16_t adcReading);
+uint16_t convertADCToMethane(uint16_t adcReading, double Ro);
 
 
 

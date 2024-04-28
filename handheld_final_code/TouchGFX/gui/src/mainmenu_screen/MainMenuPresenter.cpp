@@ -16,3 +16,7 @@ void MainMenuPresenter::deactivate()
 {
 
 }
+
+void MainMenuPresenter::notifyMethaneLevelChanged(uint16_t newMethaneLevel) {
+	view.updateMethaneLevel(newMethaneLevel);
+}

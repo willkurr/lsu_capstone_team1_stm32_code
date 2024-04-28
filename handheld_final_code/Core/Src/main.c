@@ -118,6 +118,10 @@ void ADC_Select_CH4 (void) {
 	   Error_Handler();
 	}
 }
+
+// Globals used by TouchGFX
+uint16_t methaneLevel = 0;
+volatile uint8_t newMethaneLevelReady = 0;
 /* USER CODE END 0 */
 
 /**
@@ -185,6 +189,8 @@ int main(void)
   uint32_t avgAccum = 0;
   uint16_t referenceADCValue = 0;
   uint16_t searchADCValue = 0;
+  uint16_t searchMethaneLevel = 0;
+  uint16_t referenceMethaneLevel = 0;
 
   /* USER CODE END 2 */
 
@@ -215,6 +221,17 @@ int main(void)
 		  }
 		  searchADCValue = avgAccum / numAvgs;
 		  HAL_ADC_Stop(&hadc1);
+
+		  searchMethaneLevel = convertADCToMethane(searchADCValue, 1568);		//replace Ro values with actual ones
+		  referenceMethaneLevel = convertADCToMethane(referenceADCValue, 1568);
+
+		  if (referenceMethaneLevel > searchMethaneLevel) {
+			  methaneLevel = 0;
+		  }
+		  else {
+			  methaneLevel = searchMethaneLevel - referenceMethaneLevel;
+		  }
+		  newMethaneLevelReady = 1;
 
 		  lastConversionTime = HAL_GetTick();
 	  }

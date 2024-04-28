@@ -11,6 +11,7 @@ public:
     virtual ~MainMenuView() {}
     virtual void setupScreen();
     virtual void tearDownScreen();
+    void updateMethaneLevel(uint16_t newMethaneLevel);
 protected:
 };
 

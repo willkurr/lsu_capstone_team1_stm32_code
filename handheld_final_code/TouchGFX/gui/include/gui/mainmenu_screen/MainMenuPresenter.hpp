@@ -27,6 +27,8 @@ public:
 
     virtual ~MainMenuPresenter() {}
 
+    virtual void notifyMethaneLevelChanged(uint16_t newMethaneLevel);
+
 private:
     MainMenuPresenter();
 

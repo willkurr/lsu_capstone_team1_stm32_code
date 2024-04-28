@@ -2,6 +2,7 @@
 #define MODELLISTENER_HPP
 
 #include <gui/model/Model.hpp>
+#include <stdint.h>
 
 class ModelListener
 {
@@ -14,6 +15,9 @@ public:
     {
         model = m;
     }
+
+    //Overrided in MainMenuPresenter.hpp
+    virtual void notifyMethaneLevelChanged(uint16_t newMethaneLevel) {}
 protected:
     Model* model;
 };
