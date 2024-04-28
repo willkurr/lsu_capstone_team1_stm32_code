@@ -99,12 +99,12 @@ uint16_t getNPointAverageADCValue() {
  */
 uint16_t convertADCToMethane(uint16_t adcReading, double Ro) {
 	// Convert ADC reading to floating point voltage
-	double VDD = 3.293;	 // voltage divider supply voltage (volts)
+	double VDD = 3.3;	 // voltage divider supply voltage (volts)
 	double adcVoltage = VDD * ((double)adcReading / 16383.0);	// 16383 = 2^14 - 1
 
 	double RL = 10000;	 // voltage divider circuit load resistance (ohms)
 
 
-	double methaneLevelPPM = 1.0/(pow((adcVoltage*RL)/(40.28*Ro*(VDD-adcVoltage)),2.33208955));
+	double methaneLevelPPM = 1.0/(pow((adcVoltage*RL)/(21.6*Ro*(VDD-adcVoltage)),2.707825));
 	return (uint16_t)round(methaneLevelPPM);
 }

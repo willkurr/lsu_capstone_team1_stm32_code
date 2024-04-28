@@ -191,6 +191,7 @@ int main(void)
   uint16_t searchADCValue = 0;
   uint16_t searchMethaneLevel = 0;
   uint16_t referenceMethaneLevel = 0;
+  int16_t setZero = 0;
 
   /* USER CODE END 2 */
 
@@ -222,18 +223,22 @@ int main(void)
 		  searchADCValue = avgAccum / numAvgs;
 		  HAL_ADC_Stop(&hadc1);
 
-		  searchMethaneLevel = convertADCToMethane(searchADCValue, 1568);		//replace Ro values with actual ones
-		  referenceMethaneLevel = convertADCToMethane(referenceADCValue, 1568);
+		  searchMethaneLevel = convertADCToMethane(searchADCValue, 2315.9);		//replace Ro values with actual ones
+		  referenceMethaneLevel = convertADCToMethane(referenceADCValue, 1172.8);
 
-		  if (referenceMethaneLevel > searchMethaneLevel) {
+		  if ((referenceMethaneLevel-setZero) > searchMethaneLevel) {
 			  methaneLevel = 0;
 		  }
 		  else {
-			  methaneLevel = searchMethaneLevel - referenceMethaneLevel;
+			  methaneLevel = searchMethaneLevel - referenceMethaneLevel - setZero;
 		  }
 		  newMethaneLevelReady = 1;
 
 		  lastConversionTime = HAL_GetTick();
+	  }
+
+	  if (HAL_GPIO_ReadPin(BTN_SEL_GPIO_Port, BTN_SEL_Pin)) {
+		  setZero = searchMethaneLevel - referenceMethaneLevel;
 	  }
     /* USER CODE END WHILE */
 
