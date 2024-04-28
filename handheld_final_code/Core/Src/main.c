@@ -87,7 +87,37 @@ static void MX_TIM6_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// Selects the handheld methane sensor ADC for the next conversion.
+void ADC_Select_CH1 (void) {
+	ADC_ChannelConfTypeDef sConfig = {0};
 
+	sConfig.Channel = ADC_CHANNEL_1;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_20CYCLES;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+	{
+	   Error_Handler();
+	}
+}
+
+// Selects the search methane sensor ADC for the next conversion.
+void ADC_Select_CH4 (void) {
+	ADC_ChannelConfTypeDef sConfig = {0};
+
+	sConfig.Channel = ADC_CHANNEL_4;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_20CYCLES;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+	{
+	   Error_Handler();
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -134,7 +164,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   //debugging thing
-  uint8_t registerVal;
 
   HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET); //set LED pin high to show that program is working
   HAL_GPIO_WritePin(EN_5V_GPIO_Port, EN_5V_Pin, GPIO_PIN_SET);
@@ -145,55 +174,49 @@ int main(void)
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_4);		// Enable complementary PWM on channel 4 of timer 8 (backlight brightness control)
   HAL_TIM_Base_Start_IT(&htim6);					// Start TIM6 to generate an interrupt every 1 second for calling TouchGFX vsync function. See stm32u5xx_it.c for call to vsync function
 
-  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET); //pwr led off to indicate program is starting
-  HAL_Delay(3000);
-  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
-  //Wireless_TotalRegisterReset();
-  Wireless_PowerOn();	// Power up the NRF24L01+ IC, and use the default TX and RX0 pipe address of 0xE7E7E7E7E7
-  Wireless_Write_RetrDelandCt(0b0000, 0b1111);	//set minimum retry delay (250us) and maximum retry count (15 retries)
-  uint8_t payload = 0x01;
-  registerVal = Wireless_ReadRegister(0x00);	//check config register
-  registerVal = Wireless_ReadRegister(0x01);	//Check EN autoack register
-  registerVal = Wireless_ReadRegister(0x05);	//Check RF CH register
-  registerVal = Wireless_ReadRegister(0x06);    //check RF_SETUP register
-  registerVal = Wireless_ReadRegister(0x17);	//Check FIFO STATUS register
-  Wireless_TransmitPld(&payload, 1);
-
   uint8_t touchgfxPrerun = 0;
   while (touchgfxPrerun < 100) {
 	  MX_TouchGFX_Process();	// Let TouchGFX get initialized before we start doing heavy lifting
 	  touchgfxPrerun++;
   }
 
-  uint32_t lastTransmissionTime = HAL_GetTick();
+  uint32_t lastConversionTime = HAL_GetTick();
+  uint16_t numAvgs = 32;
+  uint32_t avgAccum = 0;
+  uint16_t referenceADCValue = 0;
+  uint16_t searchADCValue = 0;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // if 500ms has passed since the last transmission
-	  if ((HAL_GetTick() - lastTransmissionTime) > 1000) {
-		  //check to see if max retries were reached
-		  Wireless_ReadRegister(0x08);	//Check OBSERVE_TX register
-		  if (Wireless_Check_MAXRT()) {
-			  if (!HAL_GPIO_ReadPin(NRF24_IRQ_GPIO_Port, NRF24_IRQ_Pin)) {
-				  uint8_t yepThereShouldBeAnInterrupt = 1;
-			  }
-
-
-			  //if so, pulse the LED to indicate TX failure
-			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET);
-			  HAL_Delay(100);
-			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
-			  Wireless_Clear_MAXRT();
-			  if (!HAL_GPIO_ReadPin(NRF24_IRQ_GPIO_Port, NRF24_IRQ_Pin)) {
-				  uint8_t nopeThereShouldntBeAnInterrupt = 0;
-			  }
+	  // If 100ms has passed since the last ADC read, read the ADCs and calculate the methane level
+	  if (HAL_GetTick() > (lastConversionTime + 100)) {
+		  // Sample the reference methane sensor using an n-point average (n = avgAccum)
+		  ADC_Select_CH1();
+		  avgAccum = 0;
+		  for (int i = 0; i < numAvgs; i++) {
+			  HAL_ADC_Start(&hadc1);
+			  HAL_ADC_PollForConversion(&hadc1, 1000);
+			  avgAccum += HAL_ADC_GetValue(&hadc1);
 		  }
-		  //transmit payload again and restart timer
-		  Wireless_TransmitPld(&payload, 1);
-		  lastTransmissionTime = HAL_GetTick();
+		  referenceADCValue = avgAccum / numAvgs;
+		  HAL_ADC_Stop(&hadc1);
+
+		  // Sample the search methane sensor using an n-point average
+		  ADC_Select_CH4();
+		  avgAccum = 0;
+		  for (int i = 0; i < numAvgs; i++) {
+			  HAL_ADC_Start(&hadc1);
+			  HAL_ADC_PollForConversion(&hadc1, 1000);
+			  avgAccum += HAL_ADC_GetValue(&hadc1);
+		  }
+		  searchADCValue = avgAccum / numAvgs;
+		  HAL_ADC_Stop(&hadc1);
+
+		  lastConversionTime = HAL_GetTick();
 	  }
     /* USER CODE END WHILE */
 
@@ -280,7 +303,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.Resolution = ADC_RESOLUTION_14B;
   hadc1.Init.GainCompensation = 0;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
@@ -299,20 +322,32 @@ static void MX_ADC1_Init(void)
     Error_Handler();
   }
 
+
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_20CYCLES;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC1_Init 2 */
+  //sConfig.Channel = ADC_CHANNEL_1;
+  //sConfig.Rank = ADC_REGULAR_RANK_1;
+  //sConfig.SamplingTime = ADC_SAMPLETIME_20CYCLES;
+  //sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  //sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  //sConfig.Offset = 0;
+  //if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  //{
+  //  Error_Handler();
+  //}
 
+  /** Configure Regular Channel
+  */
+  //sConfig.Channel = ADC_CHANNEL_4;
+  //sConfig.Rank = ADC_REGULAR_RANK_2;
+  //if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  //{
+  //  Error_Handler();
+  //}
+
+  /* USER CODE BEGIN ADC1_Init 2 */
+  // MAKE SURE TO COMMENT OUT EVERYTHING ABOVE THIS LINE UP TO CONFIGURE REGULAR CHANNEL!!! //
+  // AND ALSO MAKE SURE THAT ABOVE YOU HAVE TO SET NbrOfConversions TO 1!!!
   /* USER CODE END ADC1_Init 2 */
 
 }
