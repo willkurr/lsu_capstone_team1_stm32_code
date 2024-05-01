@@ -28,6 +28,7 @@
 #include "methane_detector.h"
 #include "wireless.h"
 #include "gps.h"
+#include "button_gui.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -122,6 +123,7 @@ void ADC_Select_CH4 (void) {
 // Globals used by TouchGFX
 uint16_t methaneLevel = 0;
 volatile uint8_t newMethaneLevelReady = 0;
+uint8_t touchgfxButtonPressed = BUTTON_NONE;
 /* USER CODE END 0 */
 
 /**
@@ -184,6 +186,7 @@ int main(void)
 	  touchgfxPrerun++;
   }
 
+  // Initializing variables used in the main loop
   uint32_t lastConversionTime = HAL_GetTick();
   uint16_t numAvgs = 32;
   uint32_t avgAccum = 0;
@@ -192,6 +195,8 @@ int main(void)
   uint16_t searchMethaneLevel = 0;
   uint16_t referenceMethaneLevel = 0;
   int16_t setZero = 0;
+  uint8_t currentButtonPressed = BUTTON_NONE;
+  uint8_t lastButtonPressed = BUTTON_NONE;
 
   /* USER CODE END 2 */
 
@@ -199,8 +204,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // If 100ms has passed since the last ADC read, read the ADCs and calculate the methane level
-	  if (HAL_GetTick() > (lastConversionTime + 100)) {
+	  // If 100ms has passed since the last ADC read and TouchGFX consumed the last level read, read the ADCs and calculate the methane level
+	  if (HAL_GetTick() > (lastConversionTime + 100) && !newMethaneLevelReady) {
 		  // Sample the reference methane sensor using an n-point average (n = avgAccum)
 		  ADC_Select_CH1();
 		  avgAccum = 0;
@@ -237,9 +242,19 @@ int main(void)
 		  lastConversionTime = HAL_GetTick();
 	  }
 
+	  // Sample to see if a button is pressed and if it should be sent to the TouchGFX.
+	  // When touchgfx receives the button press in touchgfxButtonPressed, it will set touchgfxButtonPressed back to 0.
+	  if (!touchgfxButtonPressed) {
+		  currentButtonPressed = sampleButtonPressed();
+		  touchgfxButtonPressed = reportButtonPress(currentButtonPressed, lastButtonPressed);
+		  lastButtonPressed = currentButtonPressed;
+	  }
+
+	  /* TODO: reimplement this to only be called if TouchGFX requests the zero to be set.
 	  if (HAL_GPIO_ReadPin(BTN_SEL_GPIO_Port, BTN_SEL_Pin)) {
 		  setZero = searchMethaneLevel - referenceMethaneLevel;
 	  }
+	  */
     /* USER CODE END WHILE */
 
   MX_TouchGFX_Process();

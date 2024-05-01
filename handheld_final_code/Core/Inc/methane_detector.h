@@ -23,8 +23,6 @@ extern "C" {
 
 //Start touchgfx globals
 //These globals are used by TouchGFX in TouchGFX/gui/src/model/model.cpp!!!
-extern uint16_t adcValue;
-extern double convertedVoltage;
 extern uint16_t methaneLevel;
 extern volatile uint8_t newMethaneLevelReady;
 //End touchgfx globals
