@@ -574,28 +574,6 @@
             }
           },
           {
-            "InteractionName": "showRecordingCirc",
-            "Trigger": {
-              "Type": "TriggerClicked",
-              "TriggerComponent": "startLoggingFlexButton"
-            },
-            "Action": {
-              "Type": "ActionShow",
-              "ActionComponent": "recordingCircle"
-            }
-          },
-          {
-            "InteractionName": "hideRecordingCirc",
-            "Trigger": {
-              "Type": "TriggerClicked",
-              "TriggerComponent": "startLoggingFlexButton"
-            },
-            "Action": {
-              "Type": "ActionHide",
-              "ActionComponent": "recordingCircle"
-            }
-          },
-          {
             "InteractionName": "optionsButtonClicked",
             "Trigger": {
               "Type": "TriggerClicked",
@@ -605,6 +583,39 @@
               "Type": "ActionGotoScreen",
               "ScreenTransitionType": "ScreenTransitionNone",
               "ActionComponent": "Options"
+            }
+          },
+          {
+            "InteractionName": "muteButtonClicked",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "muteFlexButton"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "muteButtonClicked"
+            }
+          },
+          {
+            "InteractionName": "startLoggingButtonClicked",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "startLoggingFlexButton"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "startLoggingButtonClicked"
+            }
+          },
+          {
+            "InteractionName": "setZeroButtonClicked",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "setZeroFlexButton"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "setZeroButtonClicked"
             }
           }
         ],

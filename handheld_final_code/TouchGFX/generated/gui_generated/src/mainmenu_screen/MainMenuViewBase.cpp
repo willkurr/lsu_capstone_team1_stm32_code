@@ -125,6 +125,7 @@ MainMenuViewBase::MainMenuViewBase() :
     muteFlexButton.setText(TypedText(T_MUTEBUTTONTEXT));
     muteFlexButton.setTextPosition(0, 0, 80, 37);
     muteFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(161, 161, 161));
+    muteFlexButton.setAction(flexButtonCallback);
     muteFlexButton.setPosition(0, 203, 80, 37);
     add(muteFlexButton);
 
@@ -144,6 +145,7 @@ MainMenuViewBase::MainMenuViewBase() :
     setZeroFlexButton.setText(TypedText(T_CHANGEUNITTEXT));
     setZeroFlexButton.setTextPosition(0, 0, 80, 37);
     setZeroFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(133, 133, 133));
+    setZeroFlexButton.setAction(flexButtonCallback);
     setZeroFlexButton.setPosition(160, 203, 80, 37);
     add(setZeroFlexButton);
 
@@ -170,25 +172,33 @@ void MainMenuViewBase::setupScreen()
 
 void MainMenuViewBase::flexButtonCallbackHandler(const touchgfx::AbstractButtonContainer& src)
 {
-    if (&src == &startLoggingFlexButton)
-    {
-        //showRecordingCirc
-        //When startLoggingFlexButton clicked show recordingCircle
-        //Show recordingCircle
-        recordingCircle.setVisible(true);
-        recordingCircle.invalidate();
-        //hideRecordingCirc
-        //When startLoggingFlexButton clicked hide recordingCircle
-        //Hide recordingCircle
-        recordingCircle.setVisible(false);
-        recordingCircle.invalidate();
-    }
     if (&src == &optionsMenuFlexButton)
     {
         //optionsButtonClicked
         //When optionsMenuFlexButton clicked change screen to Options
         //Go to Options with no screen transition
         application().gotoOptionsScreenNoTransition();
+    }
+    if (&src == &muteFlexButton)
+    {
+        //muteButtonClicked
+        //When muteFlexButton clicked call virtual function
+        //Call muteButtonClicked
+        muteButtonClicked();
+    }
+    if (&src == &startLoggingFlexButton)
+    {
+        //startLoggingButtonClicked
+        //When startLoggingFlexButton clicked call virtual function
+        //Call startLoggingButtonClicked
+        startLoggingButtonClicked();
+    }
+    if (&src == &setZeroFlexButton)
+    {
+        //setZeroButtonClicked
+        //When setZeroFlexButton clicked call virtual function
+        //Call setZeroButtonClicked
+        setZeroButtonClicked();
     }
 }
 

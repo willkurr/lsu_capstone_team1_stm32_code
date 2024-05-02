@@ -13,8 +13,14 @@ public:
     virtual void tearDownScreen();
     void updateMethaneLevel(uint16_t newMethaneLevel);
     void handleButtonPress(uint8_t button);
+    void refreshScreen();
+    void muteButtonClicked();
+    void startLoggingButtonClicked();
+    void setZeroButtonClicked();
+
 protected:
     int currentButtonSelected;
+    bool muteStatus;
 };
 
 #endif // MAINMENUVIEW_HPP

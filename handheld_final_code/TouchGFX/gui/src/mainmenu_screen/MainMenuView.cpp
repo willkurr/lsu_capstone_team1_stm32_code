@@ -1,5 +1,6 @@
 #include <gui/mainmenu_screen/MainMenuView.hpp>
 #include <touchgfx/Color.hpp>
+#include <texts/TextKeysAndLanguages.hpp>
 #include "button_gui.h"
 
 
@@ -13,6 +14,7 @@ void MainMenuView::setupScreen()
     MainMenuViewBase::setupScreen();
     touchgfxCurrentScreen = SCREEN_MAIN;
     currentButtonSelected = SCREENBUTTON_MUTE;
+    muteStatus = touchgfxIsMuteActive;	//get status of mute from the main loop of program
 }
 
 void MainMenuView::tearDownScreen()
@@ -27,6 +29,19 @@ void MainMenuView::updateMethaneLevel(uint16_t newMethaneLevel) {
 
 void MainMenuView::handleButtonPress(uint8_t button) {
 	// If this action is a click, then handle it here and return immediately
+	if (button == BUTTON_SELECT) {
+		if (currentButtonSelected == SCREENBUTTON_MUTE) {
+			ClickEvent simulatedClick = ClickEvent(ClickEvent::RELEASED,40,220);
+			muteFlexButton.setPressed(true);	//NOTE: Does this button press get stuck???
+			muteFlexButton.handleClickEvent(simulatedClick);
+		}
+		else if (currentButtonSelected == SCREENBUTTON_OPTIONS) {
+			ClickEvent simulatedClick = ClickEvent(ClickEvent::RELEASED,278,220);
+			optionsMenuFlexButton.setPressed(true);
+			optionsMenuFlexButton.handleClickEvent(simulatedClick);
+		}
+		return;
+	}
 
 	// Otherwise, let's handle if we need to change a menu item
 	// First, figure out what the current button selected is based on if left or right was pressed.
@@ -80,5 +95,31 @@ void MainMenuView::handleButtonPress(uint8_t button) {
 	startLoggingFlexButton.invalidate();
 	setZeroFlexButton.invalidate();
 	optionsMenuFlexButton.invalidate();
+
+}
+
+// Called periodically in main.c to force redraw the screen so that buttons don't get stuck.
+void MainMenuView::refreshScreen() {
+	mainMenuBackground.invalidate();
+}
+
+void MainMenuView::muteButtonClicked() {
+	muteStatus = !muteStatus;
+	touchgfxIsMuteActive = muteStatus; 		// Push the new mute status to the main program.
+	if (muteStatus == true) {
+		muteFlexButton.setText(touchgfx::TypedText(T_UNMUTEBUTTONTEXT));
+		muteFlexButton.invalidate();
+	}
+	else {
+		muteFlexButton.setText(touchgfx::TypedText(T_MUTEBUTTONTEXT));
+		muteFlexButton.invalidate();
+	}
+}
+
+void MainMenuView::startLoggingButtonClicked() {
+
+}
+
+void MainMenuView::setZeroButtonClicked() {
 
 }

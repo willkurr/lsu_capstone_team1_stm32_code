@@ -31,6 +31,8 @@ public:
 
     virtual void buttonPressed(uint8_t button);
 
+    virtual void refreshScreen();
+
 private:
     MainMenuPresenter();
 

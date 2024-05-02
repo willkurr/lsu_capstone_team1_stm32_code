@@ -19,6 +19,7 @@ public:
     //Overrided in MainMenuPresenter.hpp
     virtual void notifyMethaneLevelChanged(uint16_t newMethaneLevel) {}
     virtual void buttonPressed(uint8_t button) {}
+    virtual void refreshScreen() {}
 protected:
     Model* model;
 };

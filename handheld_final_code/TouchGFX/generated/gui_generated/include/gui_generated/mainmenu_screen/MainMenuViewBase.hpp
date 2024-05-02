@@ -36,6 +36,22 @@ public:
     }
     
 
+    /*
+     * Virtual Action Handlers
+     */
+    virtual void muteButtonClicked()
+    {
+        // Override and implement this function in MainMenu
+    }
+    virtual void startLoggingButtonClicked()
+    {
+        // Override and implement this function in MainMenu
+    }
+    virtual void setZeroButtonClicked()
+    {
+        // Override and implement this function in MainMenu
+    }
+
 protected:
     FrontendApplication& application() {
         return *static_cast<FrontendApplication*>(touchgfx::Application::getInstance());

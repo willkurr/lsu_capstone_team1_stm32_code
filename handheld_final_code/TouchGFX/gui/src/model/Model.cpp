@@ -23,4 +23,9 @@ void Model::tick()
 		modelListener->buttonPressed(touchgfxButtonPressed);
 		touchgfxButtonPressed = BUTTON_NONE;
 	}
+
+	if (touchgfxRefreshScreen) {
+		modelListener->refreshScreen();
+		touchgfxRefreshScreen = false;
+	}
 }

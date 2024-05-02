@@ -125,6 +125,10 @@ uint16_t methaneLevel = 0;
 volatile uint8_t newMethaneLevelReady = 0;
 uint8_t touchgfxButtonPressed = BUTTON_NONE;
 uint8_t touchgfxCurrentScreen = SCREEN_LOADING;
+bool touchgfxRefreshScreen = false;
+bool touchgfxIsMuteActive = false;
+// End globals used bby TouchGFX
+
 /* USER CODE END 0 */
 
 /**
@@ -200,6 +204,7 @@ int main(void)
   uint8_t lastButtonPressed = BUTTON_NONE;
   bool mainScreenEnteredYet = false;
   uint32_t mainScreenEnteredTime = 0;
+  uint32_t screenLastRefreshTime = 0;
 
   /* USER CODE END 2 */
 
@@ -213,7 +218,7 @@ int main(void)
 		  mainScreenEnteredYet = true;
 	  }
 
-	  // If the current screen is the main screen and it has been at least 1 second since that screen was entered
+	  // Handle main screen things: If the current screen is the main screen and it has been at least 1 second since that screen was entered
 	  if (touchgfxCurrentScreen == SCREEN_MAIN && HAL_GetTick() - mainScreenEnteredTime > 1000) {
 		  // If 100ms has passed since the last ADC read and TouchGFX consumed the last level read, read the ADCs and calculate the methane level
 		  if (HAL_GetTick() > (lastConversionTime + 100) && !newMethaneLevelReady) {
@@ -251,6 +256,19 @@ int main(void)
 			  newMethaneLevelReady = 1;
 
 			  lastConversionTime = HAL_GetTick();
+		  }
+
+		  // Now, when on the main screen, trigger TouchGFX to manually invalidate the whole display every 10ms
+		  if (!touchgfxRefreshScreen && HAL_GetTick() - screenLastRefreshTime > 100) {
+			  touchgfxRefreshScreen = true;
+			  screenLastRefreshTime = HAL_GetTick();
+		  }
+
+		  if (!touchgfxIsMuteActive && methaneLevel >= 20) {
+			  HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+		  }
+		  else {
+			  HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
 		  }
 	  }
 

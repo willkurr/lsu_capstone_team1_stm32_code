@@ -39,6 +39,9 @@
       <Text Id="muteButtonText" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">Mute&#10;Alarm</Translation>
       </Text>
+      <Text Id="unmuteButtonText" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Unmute&#10;Alarm</Translation>
+      </Text>
       <Text Id="__SingleUse_N6CW" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">Options</Translation>
       </Text>

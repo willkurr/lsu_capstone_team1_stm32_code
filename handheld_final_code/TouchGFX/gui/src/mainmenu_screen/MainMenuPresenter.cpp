@@ -24,3 +24,7 @@ void MainMenuPresenter::notifyMethaneLevelChanged(uint16_t newMethaneLevel) {
 void MainMenuPresenter::buttonPressed(uint8_t button) {
 	view.handleButtonPress(button);
 }
+
+void MainMenuPresenter::refreshScreen() {
+	view.refreshScreen();
+}

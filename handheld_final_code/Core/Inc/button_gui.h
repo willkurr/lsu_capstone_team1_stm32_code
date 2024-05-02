@@ -38,6 +38,8 @@ extern "C" {
 //Put globals accessed in touchgfx Model.cpp here
 extern uint8_t touchgfxButtonPressed;
 extern uint8_t touchgfxCurrentScreen;
+extern bool touchgfxRefreshScreen;
+extern bool touchgfxIsMuteActive;
 
 #ifdef __cplusplus
 }
