@@ -124,6 +124,7 @@ void ADC_Select_CH4 (void) {
 uint16_t methaneLevel = 0;
 volatile uint8_t newMethaneLevelReady = 0;
 uint8_t touchgfxButtonPressed = BUTTON_NONE;
+uint8_t touchgfxCurrentScreen = SCREEN_LOADING;
 /* USER CODE END 0 */
 
 /**
@@ -197,6 +198,8 @@ int main(void)
   int16_t setZero = 0;
   uint8_t currentButtonPressed = BUTTON_NONE;
   uint8_t lastButtonPressed = BUTTON_NONE;
+  bool mainScreenEnteredYet = false;
+  uint32_t mainScreenEnteredTime = 0;
 
   /* USER CODE END 2 */
 
@@ -204,48 +207,57 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // If 100ms has passed since the last ADC read and TouchGFX consumed the last level read, read the ADCs and calculate the methane level
-	  if (HAL_GetTick() > (lastConversionTime + 100) && !newMethaneLevelReady) {
-		  // Sample the reference methane sensor using an n-point average (n = avgAccum)
-		  ADC_Select_CH1();
-		  avgAccum = 0;
-		  for (int i = 0; i < numAvgs; i++) {
-			  HAL_ADC_Start(&hadc1);
-			  HAL_ADC_PollForConversion(&hadc1, 1000);
-			  avgAccum += HAL_ADC_GetValue(&hadc1);
-		  }
-		  referenceADCValue = avgAccum / numAvgs;
-		  HAL_ADC_Stop(&hadc1);
+	  //Start a timer if the main screen is entered so that we can delay the start of sending methane values to touchgfx.
+	  if (touchgfxCurrentScreen == SCREEN_MAIN && !mainScreenEnteredYet) {
+		  mainScreenEnteredTime = HAL_GetTick();
+		  mainScreenEnteredYet = true;
+	  }
 
-		  // Sample the search methane sensor using an n-point average
-		  ADC_Select_CH4();
-		  avgAccum = 0;
-		  for (int i = 0; i < numAvgs; i++) {
-			  HAL_ADC_Start(&hadc1);
-			  HAL_ADC_PollForConversion(&hadc1, 1000);
-			  avgAccum += HAL_ADC_GetValue(&hadc1);
-		  }
-		  searchADCValue = avgAccum / numAvgs;
-		  HAL_ADC_Stop(&hadc1);
+	  // If the current screen is the main screen and it has been at least 1 second since that screen was entered
+	  if (touchgfxCurrentScreen == SCREEN_MAIN && HAL_GetTick() - mainScreenEnteredTime > 1000) {
+		  // If 100ms has passed since the last ADC read and TouchGFX consumed the last level read, read the ADCs and calculate the methane level
+		  if (HAL_GetTick() > (lastConversionTime + 100) && !newMethaneLevelReady) {
+			  // Sample the reference methane sensor using an n-point average (n = avgAccum)
+			  ADC_Select_CH1();
+			  avgAccum = 0;
+			  for (int i = 0; i < numAvgs; i++) {
+				  HAL_ADC_Start(&hadc1);
+				  HAL_ADC_PollForConversion(&hadc1, 1000);
+				  avgAccum += HAL_ADC_GetValue(&hadc1);
+			  }
+			  referenceADCValue = avgAccum / numAvgs;
+			  HAL_ADC_Stop(&hadc1);
 
-		  searchMethaneLevel = convertADCToMethane(searchADCValue, 2315.9);		//replace Ro values with actual ones
-		  referenceMethaneLevel = convertADCToMethane(referenceADCValue, 1172.8);
+			  // Sample the search methane sensor using an n-point average
+			  ADC_Select_CH4();
+			  avgAccum = 0;
+			  for (int i = 0; i < numAvgs; i++) {
+				  HAL_ADC_Start(&hadc1);
+				  HAL_ADC_PollForConversion(&hadc1, 1000);
+				  avgAccum += HAL_ADC_GetValue(&hadc1);
+			  }
+			  searchADCValue = avgAccum / numAvgs;
+			  HAL_ADC_Stop(&hadc1);
 
-		  if ((referenceMethaneLevel-setZero) > searchMethaneLevel) {
-			  methaneLevel = 0;
-		  }
-		  else {
-			  methaneLevel = searchMethaneLevel - referenceMethaneLevel - setZero;
-		  }
-		  newMethaneLevelReady = 1;
+			  searchMethaneLevel = convertADCToMethane(searchADCValue, 2315.9);			//Ro values must be calibrated to each sensor!
+			  referenceMethaneLevel = convertADCToMethane(referenceADCValue, 1172.8);
 
-		  lastConversionTime = HAL_GetTick();
+			  if ((referenceMethaneLevel-setZero) > searchMethaneLevel) {
+				  methaneLevel = 0;
+			  }
+			  else {
+				  methaneLevel = searchMethaneLevel - referenceMethaneLevel - setZero;
+			  }
+			  newMethaneLevelReady = 1;
+
+			  lastConversionTime = HAL_GetTick();
+		  }
 	  }
 
 	  // Sample to see if a button is pressed and if it should be sent to the TouchGFX.
 	  // When touchgfx receives the button press in touchgfxButtonPressed, it will set touchgfxButtonPressed back to 0.
 	  if (!touchgfxButtonPressed) {
-		  currentButtonPressed = sampleButtonPressed();
+		  currentButtonPressed = sampleButtonPress();
 		  touchgfxButtonPressed = reportButtonPress(currentButtonPressed, lastButtonPressed);
 		  lastButtonPressed = currentButtonPressed;
 	  }

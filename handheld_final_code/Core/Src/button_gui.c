@@ -8,7 +8,8 @@
 #include "button_gui.h"
 
 /**
- * Samples the GUI buttons to see if a button has been pressed.
+ * Samples the GUI buttons to see if a button has been pressed. Does not allow for multiple button presses.
+ * If multiple buttons pressed, prioritizes this order: Left -> Right -> Up -> Down -> Select
  * @return A number corresponding to the button pressed as in button_gui.h, BUTTON_NONE if none pressed.
  */
 uint8_t sampleButtonPress() {

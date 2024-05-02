@@ -18,6 +18,10 @@
 #define BUTTON_DOWN		4
 #define BUTTON_SELECT 	5
 
+#define SCREEN_LOADING 0
+#define SCREEN_MAIN 1
+#define SCREEN_MENU 2
+
 // START GLOBAL EXTERN DEFINITIONS
 #ifdef __cplusplus
 extern "C" {
@@ -25,6 +29,7 @@ extern "C" {
 
 //Put globals accessed in touchgfx Model.cpp here
 extern uint8_t touchgfxButtonPressed;
+extern uint8_t touchgfxCurrentScreen;
 
 #ifdef __cplusplus
 }
