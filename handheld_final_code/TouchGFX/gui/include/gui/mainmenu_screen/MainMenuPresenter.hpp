@@ -29,6 +29,8 @@ public:
 
     virtual void notifyMethaneLevelChanged(uint16_t newMethaneLevel);
 
+    virtual void buttonPressed(uint8_t button);
+
 private:
     MainMenuPresenter();
 

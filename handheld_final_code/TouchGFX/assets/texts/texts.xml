@@ -6,6 +6,24 @@
   <Texts>
     <TextGroup Id="Group1" />
     <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_Y2VD" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Set Display Backlight Brightness</Translation>
+      </Text>
+      <Text Id="__SingleUse_N1FD" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Turn Off Sensors</Translation>
+      </Text>
+      <Text Id="__SingleUse_DLZM" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Export Data to USB Drive</Translation>
+      </Text>
+      <Text Id="__SingleUse_2NS7" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Set Search Sensor Ro</Translation>
+      </Text>
+      <Text Id="__SingleUse_ZFS4" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Set Reference Sensor Ro</Translation>
+      </Text>
+      <Text Id="__SingleUse_YNYE" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Change Displayed Units</Translation>
+      </Text>
       <Text Id="__SingleUse_V6CE" Alignment="Left" TypographyId="Default">
         <Translation Language="GB">Options Menu</Translation>
       </Text>
@@ -13,7 +31,7 @@
         <Translation Language="GB">&lt;Back</Translation>
       </Text>
       <Text Id="changeUnitText" Alignment="Center" TypographyId="Small">
-        <Translation Language="GB">Change&#10;Units</Translation>
+        <Translation Language="GB">Set&#10;Zero</Translation>
       </Text>
       <Text Id="loggingButtonText" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">Start&#10;Logging</Translation>
@@ -37,7 +55,7 @@
         <Translation Language="GB">&lt;value&gt;</Translation>
       </Text>
       <Text Id="methaneLevelWildcard" Alignment="Left" TypographyId="Large">
-        <Translation Language="GB">xxxxx</Translation>
+        <Translation Language="GB">xxxxxx</Translation>
       </Text>
       <Text Id="__SingleUse_8Y76" Alignment="Center" TypographyId="Humongous">
         <Translation Language="GB">&lt;value&gt;</Translation>

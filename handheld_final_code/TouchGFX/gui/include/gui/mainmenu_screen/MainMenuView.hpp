@@ -12,7 +12,9 @@ public:
     virtual void setupScreen();
     virtual void tearDownScreen();
     void updateMethaneLevel(uint16_t newMethaneLevel);
+    void handleButtonPress(uint8_t button);
 protected:
+    int currentButtonSelected;
 };
 
 #endif // MAINMENUVIEW_HPP

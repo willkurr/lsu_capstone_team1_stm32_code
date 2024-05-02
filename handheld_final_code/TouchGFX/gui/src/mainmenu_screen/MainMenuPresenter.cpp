@@ -20,3 +20,7 @@ void MainMenuPresenter::deactivate()
 void MainMenuPresenter::notifyMethaneLevelChanged(uint16_t newMethaneLevel) {
 	view.updateMethaneLevel(newMethaneLevel);
 }
+
+void MainMenuPresenter::buttonPressed(uint8_t button) {
+	view.handleButtonPress(button);
+}

@@ -26,6 +26,60 @@ OptionsViewBase::OptionsViewBase() :
     optionsBackFlexButton.setPosition(0, 0, 62, 30);
     add(optionsBackFlexButton);
 
+    optionsChangeUnitsFlexButton.setBoxWithBorderPosition(0, 0, 320, 31);
+    optionsChangeUnitsFlexButton.setBorderSize(5);
+    optionsChangeUnitsFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    optionsChangeUnitsFlexButton.setText(TypedText(T___SINGLEUSE_YNYE));
+    optionsChangeUnitsFlexButton.setTextPosition(0, 6, 320, 31);
+    optionsChangeUnitsFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(166, 166, 166));
+    optionsChangeUnitsFlexButton.setPosition(0, 30, 320, 31);
+    add(optionsChangeUnitsFlexButton);
+
+    optionsReferenceRoFlexButton.setBoxWithBorderPosition(0, 0, 320, 31);
+    optionsReferenceRoFlexButton.setBorderSize(5);
+    optionsReferenceRoFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    optionsReferenceRoFlexButton.setText(TypedText(T___SINGLEUSE_ZFS4));
+    optionsReferenceRoFlexButton.setTextPosition(0, 6, 320, 31);
+    optionsReferenceRoFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(166, 166, 166));
+    optionsReferenceRoFlexButton.setPosition(0, 61, 320, 31);
+    add(optionsReferenceRoFlexButton);
+
+    optionsSearchRoFlexButton.setBoxWithBorderPosition(0, 0, 320, 31);
+    optionsSearchRoFlexButton.setBorderSize(5);
+    optionsSearchRoFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    optionsSearchRoFlexButton.setText(TypedText(T___SINGLEUSE_2NS7));
+    optionsSearchRoFlexButton.setTextPosition(0, 6, 320, 31);
+    optionsSearchRoFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(166, 166, 166));
+    optionsSearchRoFlexButton.setPosition(0, 92, 320, 31);
+    add(optionsSearchRoFlexButton);
+
+    optionsExportDataFlexButton.setBoxWithBorderPosition(0, 0, 320, 31);
+    optionsExportDataFlexButton.setBorderSize(5);
+    optionsExportDataFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    optionsExportDataFlexButton.setText(TypedText(T___SINGLEUSE_DLZM));
+    optionsExportDataFlexButton.setTextPosition(0, 6, 320, 31);
+    optionsExportDataFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(166, 166, 166));
+    optionsExportDataFlexButton.setPosition(0, 123, 320, 31);
+    add(optionsExportDataFlexButton);
+
+    optionsSensorOffFlexButton.setBoxWithBorderPosition(0, 0, 320, 31);
+    optionsSensorOffFlexButton.setBorderSize(5);
+    optionsSensorOffFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    optionsSensorOffFlexButton.setText(TypedText(T___SINGLEUSE_N1FD));
+    optionsSensorOffFlexButton.setTextPosition(0, 6, 320, 31);
+    optionsSensorOffFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(166, 166, 166));
+    optionsSensorOffFlexButton.setPosition(0, 154, 320, 31);
+    add(optionsSensorOffFlexButton);
+
+    optionsBacklightFlexButton.setBoxWithBorderPosition(0, 0, 320, 31);
+    optionsBacklightFlexButton.setBorderSize(5);
+    optionsBacklightFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    optionsBacklightFlexButton.setText(TypedText(T___SINGLEUSE_Y2VD));
+    optionsBacklightFlexButton.setTextPosition(0, 6, 320, 31);
+    optionsBacklightFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(166, 166, 166));
+    optionsBacklightFlexButton.setPosition(0, 185, 320, 31);
+    add(optionsBacklightFlexButton);
+
     optionMenuTitleTextArea.setXY(91, 3);
     optionMenuTitleTextArea.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     optionMenuTitleTextArea.setLinespacing(0);

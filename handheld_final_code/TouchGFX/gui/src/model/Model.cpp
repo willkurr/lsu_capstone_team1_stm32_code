@@ -20,7 +20,7 @@ void Model::tick()
 	}
 
 	if (touchgfxButtonPressed != BUTTON_NONE) {
-		//Notify the modelListener of the button change
+		modelListener->buttonPressed(touchgfxButtonPressed);
 		touchgfxButtonPressed = BUTTON_NONE;
 	}
 }

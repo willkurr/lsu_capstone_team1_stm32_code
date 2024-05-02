@@ -71,7 +71,7 @@ MainMenuViewBase::MainMenuViewBase() :
     notConnectedLine.setLineEndingStyle(touchgfx::Line::ROUND_CAP_ENDING);
     add(notConnectedLine);
 
-    methaneLevelTextArea.setXY(70, 41);
+    methaneLevelTextArea.setXY(52, 41);
     methaneLevelTextArea.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     methaneLevelTextArea.setLinespacing(0);
     Unicode::snprintf(methaneLevelTextAreaBuffer, METHANELEVELTEXTAREA_SIZE, "%s", touchgfx::TypedText(T_METHANELEVELWILDCARD).getText());
@@ -121,7 +121,7 @@ MainMenuViewBase::MainMenuViewBase() :
 
     muteFlexButton.setBoxWithBorderPosition(0, 0, 80, 37);
     muteFlexButton.setBorderSize(3);
-    muteFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    muteFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(102, 145, 173), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
     muteFlexButton.setText(TypedText(T_MUTEBUTTONTEXT));
     muteFlexButton.setTextPosition(0, 0, 80, 37);
     muteFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(161, 161, 161));
@@ -138,14 +138,14 @@ MainMenuViewBase::MainMenuViewBase() :
     startLoggingFlexButton.setPosition(80, 203, 80, 37);
     add(startLoggingFlexButton);
 
-    changeUnitFlexButton.setBoxWithBorderPosition(0, 0, 80, 37);
-    changeUnitFlexButton.setBorderSize(3);
-    changeUnitFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
-    changeUnitFlexButton.setText(TypedText(T_CHANGEUNITTEXT));
-    changeUnitFlexButton.setTextPosition(0, 0, 80, 37);
-    changeUnitFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(133, 133, 133));
-    changeUnitFlexButton.setPosition(160, 203, 80, 37);
-    add(changeUnitFlexButton);
+    setZeroFlexButton.setBoxWithBorderPosition(0, 0, 80, 37);
+    setZeroFlexButton.setBorderSize(3);
+    setZeroFlexButton.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 102, 153), touchgfx::Color::getColorFromRGB(0, 153, 204), touchgfx::Color::getColorFromRGB(0, 51, 102), touchgfx::Color::getColorFromRGB(51, 102, 153));
+    setZeroFlexButton.setText(TypedText(T_CHANGEUNITTEXT));
+    setZeroFlexButton.setTextPosition(0, 0, 80, 37);
+    setZeroFlexButton.setTextColors(touchgfx::Color::getColorFromRGB(255, 255, 255), touchgfx::Color::getColorFromRGB(133, 133, 133));
+    setZeroFlexButton.setPosition(160, 203, 80, 37);
+    add(setZeroFlexButton);
 
     optionsMenuFlexButton.setBoxWithBorderPosition(0, 0, 80, 37);
     optionsMenuFlexButton.setBorderSize(3);

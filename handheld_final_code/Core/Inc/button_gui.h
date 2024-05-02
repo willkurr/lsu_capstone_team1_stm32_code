@@ -11,6 +11,7 @@
 #include "main.h"
 #include <stdbool.h>
 
+// Defines for buttons on the PCB
 #define BUTTON_NONE		0
 #define BUTTON_LEFT 	1
 #define BUTTON_RIGHT 	2
@@ -18,9 +19,16 @@
 #define BUTTON_DOWN		4
 #define BUTTON_SELECT 	5
 
+// Defines for different screens which the program can be in
 #define SCREEN_LOADING 0
 #define SCREEN_MAIN 1
 #define SCREEN_MENU 2
+
+// Define for different buttons on the main menu
+#define SCREENBUTTON_MUTE 			0
+#define SCREENBUTTON_STARTLOGGING 	1
+#define SCREENBUTTON_SETZERO		2
+#define SCREENBUTTON_OPTIONS		3
 
 // START GLOBAL EXTERN DEFINITIONS
 #ifdef __cplusplus
