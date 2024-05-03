@@ -70,7 +70,7 @@
         <Translation Language="GB">&lt;value&gt;</Translation>
       </Text>
       <Text Id="batteryPercentWildcard" Alignment="Left" TypographyId="Small">
-        <Translation Language="GB">xxx</Translation>
+        <Translation Language="GB">90</Translation>
       </Text>
       <Text Id="__SingleUse_ITFJ" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">&lt;value&gt;%</Translation>

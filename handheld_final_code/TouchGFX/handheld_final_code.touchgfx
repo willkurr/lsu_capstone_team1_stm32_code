@@ -226,7 +226,7 @@
             "Name": "batteryLevelTextArea",
             "X": 4,
             "Y": 4,
-            "Width": 39,
+            "Width": 33,
             "Height": 17,
             "TextId": "__SingleUse_ITFJ",
             "TextRotation": "0",
