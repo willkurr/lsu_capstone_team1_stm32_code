@@ -17,10 +17,12 @@ public:
     void muteButtonClicked();
     void startLoggingButtonClicked();
     void setZeroButtonClicked();
+    void setFaultLight(bool faultLightStatus);
 
 protected:
     int currentButtonSelected;
     bool muteStatus;
+    bool loggingStatus;
 };
 
 #endif // MAINMENUVIEW_HPP

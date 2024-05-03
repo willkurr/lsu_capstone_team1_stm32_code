@@ -20,6 +20,7 @@ public:
     virtual void notifyMethaneLevelChanged(uint16_t newMethaneLevel) {}
     virtual void buttonPressed(uint8_t button) {}
     virtual void refreshScreen() {}
+    virtual void setFaultLight(bool faultLightStatus) {}
 protected:
     Model* model;
 };

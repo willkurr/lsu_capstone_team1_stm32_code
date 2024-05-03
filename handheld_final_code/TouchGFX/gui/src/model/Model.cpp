@@ -28,4 +28,6 @@ void Model::tick()
 		modelListener->refreshScreen();
 		touchgfxRefreshScreen = false;
 	}
+
+	modelListener->setFaultLight(touchgfxSetFaultLight);
 }

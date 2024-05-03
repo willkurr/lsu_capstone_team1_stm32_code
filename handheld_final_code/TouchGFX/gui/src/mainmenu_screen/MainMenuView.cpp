@@ -12,9 +12,12 @@ MainMenuView::MainMenuView()
 void MainMenuView::setupScreen()
 {
     MainMenuViewBase::setupScreen();
+
+    //Initialize variables that reflect the state of the screen and main loop of the program.
     touchgfxCurrentScreen = SCREEN_MAIN;
     currentButtonSelected = SCREENBUTTON_MUTE;
-    muteStatus = touchgfxIsMuteActive;	//get status of mute from the main loop of program
+    muteStatus = touchgfxIsMuteActive;			//get status of mute from the main loop of program
+    loggingStatus = touchgfxIsLoggingActive; 	//get status of logging from the main loop of program
 }
 
 void MainMenuView::tearDownScreen()
@@ -23,7 +26,12 @@ void MainMenuView::tearDownScreen()
 }
 
 void MainMenuView::updateMethaneLevel(uint16_t newMethaneLevel) {
-	Unicode::snprintf(methaneLevelTextAreaBuffer, METHANELEVELTEXTAREA_SIZE, "%d", newMethaneLevel);
+	if (newMethaneLevel > 10500) {
+		Unicode::snprintf(methaneLevelTextAreaBuffer, METHANELEVELTEXTAREA_SIZE, "%s", touchgfx::TypedText(T_OVERRANGETEXT).getText());
+	}
+	else {
+		Unicode::snprintf(methaneLevelTextAreaBuffer, METHANELEVELTEXTAREA_SIZE, "%d", newMethaneLevel);
+	}
 	methaneLevelTextArea.invalidate();
 }
 
@@ -32,8 +40,18 @@ void MainMenuView::handleButtonPress(uint8_t button) {
 	if (button == BUTTON_SELECT) {
 		if (currentButtonSelected == SCREENBUTTON_MUTE) {
 			ClickEvent simulatedClick = ClickEvent(ClickEvent::RELEASED,40,220);
-			muteFlexButton.setPressed(true);	//NOTE: Does this button press get stuck???
+			muteFlexButton.setPressed(true);
 			muteFlexButton.handleClickEvent(simulatedClick);
+		}
+		else if (currentButtonSelected == SCREENBUTTON_STARTLOGGING) {
+			ClickEvent simulatedClick = ClickEvent(ClickEvent::RELEASED,120,220);
+			startLoggingFlexButton.setPressed(true);
+			startLoggingFlexButton.handleClickEvent(simulatedClick);
+		}
+		else if (currentButtonSelected == SCREENBUTTON_SETZERO) {
+			ClickEvent simulatedClick = ClickEvent(ClickEvent::RELEASED,200,220);
+			setZeroFlexButton.setPressed(true);
+			setZeroFlexButton.handleClickEvent(simulatedClick);
 		}
 		else if (currentButtonSelected == SCREENBUTTON_OPTIONS) {
 			ClickEvent simulatedClick = ClickEvent(ClickEvent::RELEASED,278,220);
@@ -62,10 +80,10 @@ void MainMenuView::handleButtonPress(uint8_t button) {
 	}
 
 	// First, set all the button background to the default color
-	touchgfx::colortype notHighlightedColor = touchgfx::Color::getColorFromRGB(0,102,153);	//just setting up colors here
-	touchgfx::colortype pressedColor = touchgfx::Color::getColorFromRGB(0,152,204);
-	touchgfx::colortype borderReleasedColor = touchgfx::Color::getColorFromRGB(0,51,102);
-	touchgfx::colortype borderPressedColor = touchgfx::Color::getColorFromRGB(51,102,153);
+	touchgfx::colortype notHighlightedColor = 	touchgfx::Color::getColorFromRGB(0,102,153);	//just setting up colors here
+	touchgfx::colortype pressedColor = 			touchgfx::Color::getColorFromRGB(0,152,204);	//all of these colors are copied from the button colors in the editor
+	touchgfx::colortype borderReleasedColor =	touchgfx::Color::getColorFromRGB(0,51,102);
+	touchgfx::colortype borderPressedColor = 	touchgfx::Color::getColorFromRGB(51,102,153);
 
 	muteFlexButton.setBoxWithBorderColors(notHighlightedColor, pressedColor, borderReleasedColor, borderPressedColor);	//actually setting the colors
 	startLoggingFlexButton.setBoxWithBorderColors(notHighlightedColor, pressedColor, borderReleasedColor, borderPressedColor);
@@ -117,9 +135,45 @@ void MainMenuView::muteButtonClicked() {
 }
 
 void MainMenuView::startLoggingButtonClicked() {
-
+	loggingStatus = !loggingStatus;
+	touchgfxIsLoggingActive = loggingStatus;	// Push the new logging status to the main program.
+	if (loggingStatus == true) {
+		recordingCircle.setVisible(true);
+		recordingCircle.invalidate();
+	}
+	else {
+		recordingCircle.setVisible(false);
+		recordingCircle.invalidate();
+	}
 }
 
 void MainMenuView::setZeroButtonClicked() {
+	//If there is no sensor zeroing in progress, send request to main program to zero the sensors
+	if (touchgfxZeroRequested == false)
+		touchgfxZeroRequested = true;
+}
 
+//This function sets the fault light and the 20% LEL lights!!!
+//While it only takes the value of the fault light from the Model.cpp tick(), it takes in
+//the 20% LEL light status from a global variable in button_gui.h.
+void MainMenuView::setFaultLight(bool faultLightStatus) {
+	// If fault light needs to be turned on, set the circle color to amber.
+	if (faultLightStatus == true) {
+		faultStatusCirclePainter.setColor(touchgfx::Color::getColorFromRGB(252, 170, 3));
+	}
+	// Else, set it back to grey.
+	else {
+		faultStatusCirclePainter.setColor(touchgfx::Color::getColorFromRGB(209, 209, 209));
+	}
+	faultStatusCircle.invalidate();	//Redraw the fault light
+
+	// If 20% LEL light needs to be turned on, set the circle color to red.
+	if (touchgfxSet20LELLight == true) {
+		overRangeAlarmStatusPainter.setColor(touchgfx::Color::getColorFromRGB(255, 0, 0));
+	}
+	// Else, set it back to grey.
+	else {
+		overRangeAlarmStatusPainter.setColor(touchgfx::Color::getColorFromRGB(209, 209, 209));
+	}
+	overRangeAlarmStatus.invalidate();	//Redraw the fault light
 }

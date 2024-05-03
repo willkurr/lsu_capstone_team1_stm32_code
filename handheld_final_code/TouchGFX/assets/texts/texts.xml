@@ -6,6 +6,9 @@
   <Texts>
     <TextGroup Id="Group1" />
     <TextGroup Id="Unsorted">
+      <Text Id="overRangeText" Alignment="Center" TypographyId="Humongous">
+        <Translation Language="GB">OVER</Translation>
+      </Text>
       <Text Id="__SingleUse_Y2VD" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">Set Display Backlight Brightness</Translation>
       </Text>
@@ -35,6 +38,9 @@
       </Text>
       <Text Id="loggingButtonText" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">Start&#10;Logging</Translation>
+      </Text>
+      <Text Id="stopLoggingButtonText" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">Stop&#10;Logging</Translation>
       </Text>
       <Text Id="muteButtonText" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">Mute&#10;Alarm</Translation>
@@ -114,6 +120,6 @@
     <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
     <Typography Id="Large" Font="verdana.ttf" Size="50" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
     <Typography Id="Small" Font="verdana.ttf" Size="14" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WidgetWildcardCharacters="0123456789 :APM" />
-    <Typography Id="Humongous" Font="verdana.ttf" Size="60" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789" WildcardCharacterRanges="0-9" />
+    <Typography Id="Humongous" Font="verdana.ttf" Size="60" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789OVER" WildcardCharacterRanges="0-9" />
   </Typographies>
 </TextDatabase>

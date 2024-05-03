@@ -28,3 +28,7 @@ void MainMenuPresenter::buttonPressed(uint8_t button) {
 void MainMenuPresenter::refreshScreen() {
 	view.refreshScreen();
 }
+
+void MainMenuPresenter::setFaultLight(bool faultLightStatus) {
+	view.setFaultLight(faultLightStatus);
+}

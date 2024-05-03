@@ -40,6 +40,10 @@ extern uint8_t touchgfxButtonPressed;
 extern uint8_t touchgfxCurrentScreen;
 extern bool touchgfxRefreshScreen;
 extern bool touchgfxIsMuteActive;
+extern bool touchgfxIsLoggingActive;
+extern bool touchgfxZeroRequested;
+extern bool touchgfxSetFaultLight;
+extern bool touchgfxSet20LELLight;
 
 #ifdef __cplusplus
 }

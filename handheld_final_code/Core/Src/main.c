@@ -127,7 +127,11 @@ uint8_t touchgfxButtonPressed = BUTTON_NONE;
 uint8_t touchgfxCurrentScreen = SCREEN_LOADING;
 bool touchgfxRefreshScreen = false;
 bool touchgfxIsMuteActive = false;
-// End globals used bby TouchGFX
+bool touchgfxIsLoggingActive = false;
+bool touchgfxZeroRequested = false;
+bool touchgfxSetFaultLight = false;
+bool touchgfxSet20LELLight = false;
+// End globals used by TouchGFX
 
 /* USER CODE END 0 */
 
@@ -174,10 +178,12 @@ int main(void)
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
 
-  //debugging thing
-
+  //HAL_GPIO_WritePin(GPS_EN_GPIO_Port, GPS_EN_Pin, GPIO_PIN_RESET);	//Temporarily reset GPS (which is connected to display reset)
   HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET); //set LED pin high to show that program is working
   HAL_GPIO_WritePin(EN_5V_GPIO_Port, EN_5V_Pin, GPIO_PIN_SET);
+
+  //HAL_Delay(1000);	//Wait a little before resetting display
+  HAL_GPIO_WritePin(GPS_EN_GPIO_Port, GPS_EN_Pin, GPIO_PIN_RESET);
 
   ILI9341_Init();		// Run initialization function for LCD display
   ILI9341_SetDisplayBrightness(&htim8,100);	//set backlight brightness to 100%
@@ -205,6 +211,8 @@ int main(void)
   bool mainScreenEnteredYet = false;
   uint32_t mainScreenEnteredTime = 0;
   uint32_t screenLastRefreshTime = 0;
+  uint32_t powerButtonHeldAtTime = 0;
+  bool powerButtonLastHeld = false;
 
   /* USER CODE END 2 */
 
@@ -247,12 +255,30 @@ int main(void)
 			  searchMethaneLevel = convertADCToMethane(searchADCValue, 2315.9);			//Ro values must be calibrated to each sensor!
 			  referenceMethaneLevel = convertADCToMethane(referenceADCValue, 1172.8);
 
-			  if ((referenceMethaneLevel-setZero) > searchMethaneLevel) {
+			  // Compute the differential methane level and prevent it from going negative
+			  if (((int)searchMethaneLevel - (int)referenceMethaneLevel - (int)setZero) < 0) {
 				  methaneLevel = 0;
 			  }
 			  else {
 				  methaneLevel = searchMethaneLevel - referenceMethaneLevel - setZero;
 			  }
+
+			  // If the differential measurement is more than -20ppm, illuminate the fault light
+			  if (((int)searchMethaneLevel - (int)referenceMethaneLevel - (int)setZero) < -20) {
+				  touchgfxSetFaultLight = true;
+			  }
+			  else {
+				  touchgfxSetFaultLight = false;
+			  }
+
+			  // If the differential measurement is 10,000 ppm or more, illuminate the 20% LEL light
+			  if (methaneLevel >= 10000) {
+				  touchgfxSet20LELLight = true;
+			  }
+			  else {
+				  touchgfxSet20LELLight = false;
+			  }
+
 			  newMethaneLevelReady = 1;
 
 			  lastConversionTime = HAL_GetTick();
@@ -270,6 +296,12 @@ int main(void)
 		  else {
 			  HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
 		  }
+
+		  // If the set zero button is pressed, calculate the new set zero and clear the request.
+		  if (touchgfxZeroRequested) {
+			  setZero = searchMethaneLevel - referenceMethaneLevel;
+			  touchgfxZeroRequested = false;
+		  }
 	  }
 
 	  // Sample to see if a button is pressed and if it should be sent to the TouchGFX.
@@ -280,11 +312,37 @@ int main(void)
 		  lastButtonPressed = currentButtonPressed;
 	  }
 
-	  /* TODO: reimplement this to only be called if TouchGFX requests the zero to be set.
-	  if (HAL_GPIO_ReadPin(BTN_SEL_GPIO_Port, BTN_SEL_Pin)) {
-		  setZero = searchMethaneLevel - referenceMethaneLevel;
+	  // Check if power button is pressed
+	  if (HAL_GPIO_ReadPin(BTN_PWR_GPIO_Port, BTN_PWR_Pin)) {
+		  // If so, and it wasn't previously held, start the holding timer
+		  if (!powerButtonLastHeld) {
+			  powerButtonHeldAtTime = HAL_GetTick();
+		  }
+		  powerButtonLastHeld = true;
+		  // If 2 seconds have passed since the button was held, turn off the device
+		  if ((HAL_GetTick() - powerButtonHeldAtTime) > 2000) {
+			  //Turn off everything
+			  ILI9341_SetDisplayBrightness(&htim8,0);
+			  HAL_GPIO_WritePin(GPS_EN_GPIO_Port, GPS_EN_Pin, GPIO_PIN_RESET);
+			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET);
+			  HAL_GPIO_WritePin(EN_5V_GPIO_Port, EN_5V_Pin, GPIO_PIN_RESET);
+			  HAL_Delay(3000);	//wait 3 seconds so power button doesnt immediately wake up device
+
+			  //Wait for power button press again to reset program
+			  while (1) {
+				  if (HAL_GPIO_ReadPin(BTN_PWR_GPIO_Port, BTN_PWR_Pin)) {
+					  NVIC_SystemReset();
+				  }
+				  HAL_Delay(500);
+			  }
+		  }
 	  }
-	  */
+	  // If not pressed, reset the timer.
+	  else {
+		  powerButtonLastHeld = false;
+	  }
+
+
     /* USER CODE END WHILE */
 
   MX_TouchGFX_Process();
@@ -374,7 +432,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 2;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
@@ -389,29 +447,27 @@ static void MX_ADC1_Init(void)
     Error_Handler();
   }
 
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_20CYCLES;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
   /** Configure Regular Channel
   */
-  //sConfig.Channel = ADC_CHANNEL_1;
-  //sConfig.Rank = ADC_REGULAR_RANK_1;
-  //sConfig.SamplingTime = ADC_SAMPLETIME_20CYCLES;
-  //sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  //sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  //sConfig.Offset = 0;
-  //if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  //{
-  //  Error_Handler();
-  //}
-
-  /** Configure Regular Channel
-  */
-  //sConfig.Channel = ADC_CHANNEL_4;
-  //sConfig.Rank = ADC_REGULAR_RANK_2;
-  //if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  //{
-  //  Error_Handler();
-  //}
-
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC1_Init 2 */
   // MAKE SURE TO COMMENT OUT EVERYTHING ABOVE THIS LINE UP TO CONFIGURE REGULAR CHANNEL!!! //
   // AND ALSO MAKE SURE THAT ABOVE YOU HAVE TO SET NbrOfConversions TO 1!!!
@@ -925,7 +981,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, PWR_LED_Pin|NRF24_CS_Pin|NRF24_CE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, BUZZER_Pin|EN_5V_Pin|SD_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPS_EN_Pin|BUZZER_Pin|EN_5V_Pin|SD_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LCD_CS_Pin|LCD_DC_Pin|LCD_RST_Pin, GPIO_PIN_RESET);
@@ -937,14 +993,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : GPS_EN_Pin */
-  GPIO_InitStruct.Pin = GPS_EN_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPS_EN_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : BUZZER_Pin EN_5V_Pin SD_CS_Pin */
-  GPIO_InitStruct.Pin = BUZZER_Pin|EN_5V_Pin|SD_CS_Pin;
+  /*Configure GPIO pins : GPS_EN_Pin BUZZER_Pin EN_5V_Pin SD_CS_Pin */
+  GPIO_InitStruct.Pin = GPS_EN_Pin|BUZZER_Pin|EN_5V_Pin|SD_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

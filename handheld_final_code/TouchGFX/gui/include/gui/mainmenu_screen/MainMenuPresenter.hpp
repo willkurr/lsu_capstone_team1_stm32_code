@@ -33,6 +33,8 @@ public:
 
     virtual void refreshScreen();
 
+    virtual void setFaultLight(bool faultLightStatus);
+
 private:
     MainMenuPresenter();
 
