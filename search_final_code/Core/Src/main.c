@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
+#include <stdbool.h>
 #include "wireless.h"
 /* USER CODE END Includes */
 
@@ -99,14 +100,43 @@ int main(void)
   HAL_GPIO_WritePin(ENABLE_5V_GPIO_Port, ENABLE_5V_Pin, GPIO_PIN_SET);	//turn on methane sensor heater and sensing op-amp
   HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_SET);
 
+  bool powerButtonLastHeld = false;
+  uint32_t powerButtonHeldAtTime = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //this thing is a brick for now since we are in wired mode! power logic should be added though
-	  HAL_Delay(1000);
+	  // Check if power button is pressed
+	  if (HAL_GPIO_ReadPin(PWR_BTN_GPIO_Port, PWR_BTN_Pin)) {
+		  // If so, and it wasn't previously held, start the holding timer
+		  if (!powerButtonLastHeld) {
+			  powerButtonHeldAtTime = HAL_GetTick();
+		  }
+		  powerButtonLastHeld = true;
+		  // If 2 seconds have passed since the button was held, turn off the device
+		  if ((HAL_GetTick() - powerButtonHeldAtTime) > 2000) {
+			  //Turn off everything
+			  HAL_GPIO_WritePin(PWR_LED_GPIO_Port, PWR_LED_Pin, GPIO_PIN_RESET);
+			  HAL_GPIO_WritePin(ENABLE_5V_GPIO_Port, ENABLE_5V_Pin, GPIO_PIN_RESET);
+			  HAL_Delay(3000);	//wait 3 seconds so power button doesnt immediately wake up device
+
+			  //Wait for power button press again to reset program
+			  while (1) {
+				  if (HAL_GPIO_ReadPin(PWR_BTN_GPIO_Port, PWR_BTN_Pin)) {
+					  NVIC_SystemReset();
+				  }
+				  HAL_Delay(500);
+			  }
+		  }
+	  }
+	  // If not pressed, reset the timer.
+	  else {
+		  powerButtonLastHeld = false;
+	  }
+
+	  HAL_Delay(100);	// We really don't need power button checking code to run at full speed do we now?
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
